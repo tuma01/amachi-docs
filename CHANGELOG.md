@@ -1,0 +1,16 @@
+# Registro de cambios de la arquitectura
+
+> Conserva su número de sección (§15). Una fila por cambio de regla, modelo o convención, en la misma sesión en que se
+> decide. La entrada más reciente arriba.
+
+## 15. Registro de cambios
+
+| Fecha | Cambio |
+|---|---|
+| 2026-10-25 | `ARQUITECTURA-BASE.md` movido al repositorio `amachi-docs` y separado por tema (arquitectura, estándares, seguridad, plantillas) sin cambiar la numeración; lo propio de la plataforma (§12, §13, §14.2) pasa a `amachi-platform/docs/PLATAFORMA.md`; ADR 0001–0004 registran las decisiones del BOM, la plataforma como dependencia, Keycloak y Vitalia congelada. |
+| 2026-10-25 | BOM 2.1.0 al estilo Spring Boot (`amachi-dependencies` + `amachi-parent`), Spring Boot 4.1.2, JUnit 6.1 alineado con Cucumber 8; la plataforma se consume como dependencia versionada; la Vitalia actual queda congelada en el BOM 2.0.0 (§2, §3.4, §14.2). |
+| 2026-10-24 | Repositorio de la plataforma movido a `F:\JAVA-PROJET\inverpulse\workspace\amachi-platform`; ubicaciones del ecosistema anotadas en §12 y en `CLAUDE.md`. |
+| 2026-10-24 | Etapa 2 (parcial): `Organization` como tenant cliente genérico, roles como datos (`SUPER_ADMIN`/`ADMIN`/`USER`), perfiles por rol con `DomainProfileRequest` (sin ThreadLocal), enums extensibles por interfaz `code()`, servicios contratables como catálogo; nuevos modelos en §12. |
+| 2026-10-24 | Objetivo de cumplimiento (ISO 27001, OWASP ASVS L2, Ley 25) y decisiones: Keycloak, BFF, AES-GCM + HMAC, `@TenantId`, bitácora encadenada, `core-privacy`; plan por etapas (§14). |
+| 2026-10-24 | Base de datos `platform_db`, trigramas por sector y rangos Flyway (§3.3); modernización recomendada (§13). |
+| 2026-10-24 | Creado a partir de `ARCHITECTURE.md` de Vitalia (versión del 2026-10-23), sin lo propio del sector salud. Módulos de arranque y pruebas renombrados a `platform-boot` / `platform-test`. |
