@@ -7,6 +7,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-10-26 | Una sola carpeta por app: se quitan los worktrees `vitalia-api-demo` y `vitalia-web-demo`. La demo sigue en la rama `release/1.0` (etiqueta `v1.0.0-demo`) y se abre en la misma carpeta con `git switch release/1.0`; se vuelve con `git switch main`. La decisión del ADR-0005 no cambia. |
 | 2026-10-26 | Etapa D de la plataforma: hereda `com.amachi:amachi-parent:2.1.0-SNAPSHOT` (Boot 4.1.2, JUnit 6, Testcontainers 2), groupId `com.amachi.platform` y BOM propio `amachi-platform-dependencies` (ADR-0001, ADR-0002); desaparece la colisión de coordenadas con Vitalia en `~/.m2`. |
 | 2026-10-26 | ADR-0005 reemplaza al ADR-0004: Vitalia evoluciona en su mismo repositorio (`main`) y la demo queda congelada en la rama `release/1.0` con la etiqueta `v1.0.0-demo` (worktrees `vitalia-api-demo` y `vitalia-web-demo`); no se crea `vitalia-legacy`. |
 | 2026-10-26 | Regla del último administrador (§5.6.1) con el estado real del código; convención de ramas `<tipo>/<CLAVE>-NNN` y clave `DOC` para este repositorio (§10). Carpetas reorganizadas: plataforma, BOM y docs en `F:\JAVA-PROJET\amachi`; Vitalia en `F:\JAVA-PROJET\vitalia` (`vitalia-api`, `vitalia-web` y los worktrees de la demo `release/1.0`); material viejo en `F:\JAVA-PROJET\back-up`. |
