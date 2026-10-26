@@ -7,6 +7,8 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-10-26 | Etapa 2 de la plataforma terminada: sin vocabulario de salud en `core-*` (organización demo `demo-org`, roles `SUPER_ADMIN`/`ADMIN`/`USER`, i18n en/es completo, plantillas de correo con `platformName`, rutas públicas solo con controlador); suite verde: 177 tests unitarios y 69 escenarios Cucumber (`amachi-platform/CLAUDE.md`). |
+| 2026-10-26 | La demo de Vitalia vive solo en la etiqueta `v1.0.0-demo` (se borró la rama `release/1.0` en `vitalia-api` y `vitalia-web`); se abre con `git switch --detach v1.0.0-demo` y un arreglo urgente crea su rama desde la etiqueta. Complementa el ADR-0005 sin cambiar su decisión. |
 | 2026-10-26 | Una sola carpeta por app: se quitan los worktrees `vitalia-api-demo` y `vitalia-web-demo`. La demo sigue en la rama `release/1.0` (etiqueta `v1.0.0-demo`) y se abre en la misma carpeta con `git switch release/1.0`; se vuelve con `git switch main`. La decisión del ADR-0005 no cambia. |
 | 2026-10-26 | Etapa D de la plataforma: hereda `com.amachi:amachi-parent:2.1.0-SNAPSHOT` (Boot 4.1.2, JUnit 6, Testcontainers 2), groupId `com.amachi.platform` y BOM propio `amachi-platform-dependencies` (ADR-0001, ADR-0002); desaparece la colisión de coordenadas con Vitalia en `~/.m2`. |
 | 2026-10-26 | ADR-0005 reemplaza al ADR-0004: Vitalia evoluciona en su mismo repositorio (`main`) y la demo queda congelada en la rama `release/1.0` con la etiqueta `v1.0.0-demo` (worktrees `vitalia-api-demo` y `vitalia-web-demo`); no se crea `vitalia-legacy`. |
