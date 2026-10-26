@@ -1,6 +1,6 @@
 # ADR-0004: La Vitalia actual queda congelada y se reconstruye sobre la plataforma
 
-- **Estado**: Aceptada
+- **Estado**: Reemplazada por ADR-0005
 - **Fecha**: 2026-10-25
 - **Decide**: Juan Amachi
 
