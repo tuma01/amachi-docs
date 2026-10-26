@@ -25,3 +25,7 @@
 - Método para cambios que se repiten: template → **un** ejemplo validado → el resto, abriendo cada archivo.
 - Lint sin advertencias nuevas; `tsc` de la app y de los specs.
 - Git: commits del usuario, mensajes de una línea `<CLAVE>-NNN tipo(scope): descripción`.
+- Ramas: `main` estable y solo por pull request; una rama por cambio, `<tipo>/<CLAVE>-NNN-descripcion-corta`
+  (tipos `feature`, `fix`, `docs`, `refactor`, `chore`, `test`, `hotfix`); `release/x.y` solo para versiones
+  congeladas. Claves: `DOC` en `amachi-docs`. Propuesta pendiente de confirmar: `AMA` plataforma, `VIT` Vitalia,
+  `INV` InverPulse, con un número compartido entre backend y frontend de la misma tarea.
