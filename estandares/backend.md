@@ -78,6 +78,33 @@
 - Patrones establecidos (reusar antes de inventar): Bridge, Strategy/Provider, Template Method (`BaseService`),
   Builder, Observer (listener de auditoría).
 
+### 5.6.1 Último administrador (Last Man Standing)
+
+Ninguna operación puede dejar a la plataforma sin un superadministrador de nivel 1, ni a una organización sin un
+administrador de nivel 1. Sin esa cuenta nadie puede crear otra y el acceso solo se recupera tocando la base de datos.
+
+- **Qué operaciones protege:** borrar, desactivar y bajar de nivel. Las tres sacan a la cuenta del grupo de
+  administradores de nivel 1, así que se validan igual.
+- **Qué se cuenta:** solo cuentas **activas** (usuario habilitado) del **nivel 1** y del mismo ámbito (la plataforma o
+  la organización), excluyendo la cuenta que se modifica.
+- **Dónde se valida:** en el servicio, dentro de la misma transacción que la escritura. Nunca solo en el frontend.
+- **Error:** `BusinessException` con clave i18n (409, §5.7), por ejemplo `admin.error.last_level1`, con mensaje en
+  todos los idiomas. Nunca `IllegalStateException` (termina en 500) ni texto fijo en inglés.
+- **Frontend:** la acción se muestra deshabilitada con el motivo cuando la cuenta es la última de nivel 1; el 409 del
+  servidor sigue siendo la protección real.
+- **Pruebas:** borrar, desactivar y bajar de nivel a la última cuenta devuelven 409 y no cambian nada; las mismas
+  operaciones con otra cuenta de nivel 1 activa se permiten. Probar con datos `PRUEBA`, nunca con el seed.
+
+**Estado del código al 2026-10-26 (`core-management`):**
+
+| Caso | Hoy | Falta |
+|---|---|---|
+| Admin. de organización: borrar | Protegido (cuenta nivel 1 activos; el borrado desactiva el usuario) | Clave i18n en lugar de texto fijo |
+| Admin. de organización: bajar de nivel | Protegido (otros nivel 1 activos) | Clave i18n en lugar de texto fijo |
+| Superadmin: borrar | Cuenta **todos** los superadmins, de cualquier nivel y estado; lanza `IllegalStateException` | Contar solo nivel 1 activos; `BusinessException` 409 |
+| Superadmin: bajar de nivel o desactivar | **Sin protección** | Agregar la validación |
+| Desactivar desde otras pantallas (usuarios) | Sin verificar | Revisar que pasen por la misma regla |
+
 ### 5.7 Errores
 
 | Situación | Excepción | HTTP |
