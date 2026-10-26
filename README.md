@@ -28,7 +28,7 @@ apartarse de una regla, lo dice explícitamente en su documento y por qué.
 |---|---|
 | `ARQUITECTURA.md` | §0 Uso y mantenimiento · §1 Principios · §2 Stack · §3 Estructura (3.1 módulos, 3.2 feature, 3.4 BOM) · §4 Multi-tenancy · §6 Seguridad · §7 Tiempo, estados y procesos · §9 Escalabilidad |
 | `estandares/base-de-datos.md` | §3.3 Base de datos |
-| `estandares/backend.md` | §5 Backend por capas (entidad, DTO, mapper, repository, specification, service, errores, API, contrato) |
+| `estandares/backend.md` | §5 Backend por capas (entidad, DTO, mapper, repository, specification, service, último administrador, errores, API, contrato) |
 | `estandares/frontend.md` | §8 Frontend (estructura, motor CRUD, datos grandes, i18n, UI) |
 | `estandares/pruebas.md` | §10 Pruebas y calidad |
 | `plantillas/checklist-feature.md` | §11 Checklist de un feature nuevo |
