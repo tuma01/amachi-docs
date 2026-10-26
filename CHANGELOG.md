@@ -7,6 +7,8 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-10-26 | Etapa D de la plataforma: hereda `com.amachi:amachi-parent:2.1.0-SNAPSHOT` (Boot 4.1.2, JUnit 6, Testcontainers 2), groupId `com.amachi.platform` y BOM propio `amachi-platform-dependencies` (ADR-0001, ADR-0002); desaparece la colisión de coordenadas con Vitalia en `~/.m2`. |
+| 2026-10-26 | ADR-0005 reemplaza al ADR-0004: Vitalia evoluciona en su mismo repositorio (`main`) y la demo queda congelada en la rama `release/1.0` con la etiqueta `v1.0.0-demo` (worktrees `vitalia-api-demo` y `vitalia-web-demo`); no se crea `vitalia-legacy`. |
 | 2026-10-26 | Regla del último administrador (§5.6.1) con el estado real del código; convención de ramas `<tipo>/<CLAVE>-NNN` y clave `DOC` para este repositorio (§10). Carpetas reorganizadas: plataforma, BOM y docs en `F:\JAVA-PROJET\amachi`; Vitalia en `F:\JAVA-PROJET\vitalia` (`vitalia-api`, `vitalia-web` y los worktrees de la demo `release/1.0`); material viejo en `F:\JAVA-PROJET\back-up`. |
 | 2026-10-25 | `ARQUITECTURA-BASE.md` movido al repositorio `amachi-docs` y separado por tema (arquitectura, estándares, seguridad, plantillas) sin cambiar la numeración; lo propio de la plataforma (§12, §13, §14.2) pasa a `amachi-platform/docs/PLATAFORMA.md`; ADR 0001–0004 registran las decisiones del BOM, la plataforma como dependencia, Keycloak y Vitalia congelada. |
 | 2026-10-25 | BOM 2.1.0 al estilo Spring Boot (`amachi-dependencies` + `amachi-parent`), Spring Boot 4.1.2, JUnit 6.1 alineado con Cucumber 8; la plataforma se consume como dependencia versionada; la Vitalia actual queda congelada en el BOM 2.0.0 (§2, §3.4, §14.2). |
