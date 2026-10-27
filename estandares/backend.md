@@ -108,12 +108,32 @@ escenario. El último SuperAdmin se prueba solo con unitarias: el único de la s
 
 ### 5.7 Errores
 
+**Formato de toda respuesta de error (RFC 9457, desde 2026-10-26):** `application/problem+json` con `type`
+(`urn:amachi:problem:<código>`, ej. `urn:amachi:problem:BUS_006`), `title` (motivo HTTP), `status`, `detail` (el mensaje
+en el idioma de quien lee), `instance` (la ruta) y las extensiones `timestamp` y `errors` (lista con `code`, `field`,
+`details.invalidFields`, `details.suggestion`…). Los errores que responde Spring MVC (405, 415, ruta inexistente) usan el
+mismo documento. **Nunca** se devuelve una traza, una clase de excepción ni el mensaje interno de un parser: van al log
+con el `traceId` que recibe el cliente.
+
+**Claves de idempotencia:** los POST que crean algo crítico (organizaciones, invitaciones, cargas masivas, facturas,
+servicios contratados, administradores) aceptan `Idempotency-Key`. Misma clave y mismo pedido → la primera respuesta con
+`Idempotent-Replayed: true`; misma clave y otro pedido → 422 (`BUS_009`); mientras el primero corre → 409 (`BUS_010`).
+Una ruta nueva que crea algo que no debe duplicarse se agrega a `IdempotencyProperties.PATHS`.
+
+**Concurrencia (`ETag` / `If-Match`):** la respuesta con un registro versionado lleva `ETag: "<version>"` y el DTO
+expone `version` de solo lectura (el mapper **nunca** la copia del cliente a la entidad). Quien edita o borra la reenvía
+en `If-Match`: si el registro cambió → 412 (`BUS_011`) y no se aplica nada; una `version` vieja en el cuerpo → 409
+(`BUS_008`). Sin precondición funciona como antes. Un DTO nuevo de entidad implementa `Versioned`; la comparación vive
+en `BaseService` (`ConcurrencyCheck`), no en cada servicio.
+
 | Situación | Excepción | HTTP |
 |---|---|---|
 | Regla de negocio sobre el **estado** (duplicado, transición inválida, conflicto) | `BusinessException("modulo.error.clave", details?, args…)` | **409** |
 | Dato inválido detectado por una regla del servicio (usa el reloj, otro campo o la base) | `FieldValidationException(Map campo→clave)` | **400 por campo** (misma forma que `@Valid`, `details.invalidFields`) |
 | Bean Validation | `@Valid` | 400 por campo |
 | No encontrado / ajeno | `ResourceNotFoundException` | 404 (sin revelar si existe o es de otro) |
+| Demasiados pedidos (límite de tasa, SEG9) | — (filtro) | 429 + `Retry-After` |
+| El registro cambió desde que se leyó (`If-Match`) / `version` vieja | — (`BaseService`) | 412 / 409 |
 | Sin permiso | `@PreAuthorize` | 403 (**antes** que 400, §6) |
 
 - **Un error explica y propone**: los `args` llenan `{0}`, `{1}` del mensaje; una propuesta aplicable va en

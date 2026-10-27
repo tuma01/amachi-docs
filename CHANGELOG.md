@@ -7,6 +7,8 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-10-26 | Bitácora solo agregar y encadenada por HMAC-SHA256 por organización (clave versionada fuera del repositorio, `AUDIT_CHAIN_KEY`), verificación de integridad, retención configurable con ancla y lecturas sensibles con `@AuditedRead` (§8 de `ARQUITECTURA.md`). Etapa 3 de la plataforma: SEG11. |
+| 2026-10-26 | Errores en RFC 9457 (`application/problem+json`, extensión `errors`), claves de idempotencia en los POST críticos y concurrencia con `ETag`/`If-Match` (412) o `version` (409) (§5.7); límite de tasa con 429 + `Retry-After`. Etapa 3 de la plataforma: SEG7, SEG8, SEG9, SEG10 y SEG12. |
 | 2026-10-26 | Regla del último administrador (§5.6.1) cerrada en la plataforma: SuperAdmin (solo nivel 1 activos, 409), baja propia vía `AccountDeactivationGuard` (Bridge en `core-auth`) y claves traducibles. Etapa 3 de la plataforma iniciada: SEG0 (además, avatar aislado por organización) y SEG1 (tokens de invitación solo como huella SHA-256). |
 | 2026-10-26 | Etapa 2 de la plataforma terminada: sin vocabulario de salud en `core-*` (organización demo `demo-org`, roles `SUPER_ADMIN`/`ADMIN`/`USER`, i18n en/es completo, plantillas de correo con `platformName`, rutas públicas solo con controlador); suite verde: 177 tests unitarios y 69 escenarios Cucumber (`amachi-platform/CLAUDE.md`). |
 | 2026-10-26 | La demo de Vitalia vive solo en la etiqueta `v1.0.0-demo` (se borró la rama `release/1.0` en `vitalia-api` y `vitalia-web`); se abre con `git switch --detach v1.0.0-demo` y un arreglo urgente crea su rama desde la etiqueta. Complementa el ADR-0005 sin cambiar su decisión. |
