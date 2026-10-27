@@ -207,7 +207,10 @@
   falló queda visible para que una persona actúe. En desarrollo, siempre a MailDev, nunca al servidor real.
 - **Bitácora de auditoría**: todo cambio de gobierno se registra con `AuditService.registerEntityEvent(…)` después del
   commit, en su propia transacción; mensajes traducibles (`AuditMessage.of(clave, params)`); la organización ve lo que
-  hizo su gente **y lo que la plataforma cambió en ella**.
+  hizo su gente **y lo que la plataforma cambió en ella**. **Solo agregar y encadenada** (SEG11): cada evento entra por
+  `AuditChain.append` con la huella HMAC del anterior de su organización; nunca se actualiza ni se borra (solo la
+  retención, que deja ancla y constancia); `GET /audit-events/integrity` lo verifica. Una lectura de datos sensibles
+  lleva `@AuditedRead("Tipo")` en el método del controlador (evento `SENSITIVE_DATA_READ`).
 
 ---
 
