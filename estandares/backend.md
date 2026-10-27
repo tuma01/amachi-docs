@@ -95,15 +95,16 @@ administrador de nivel 1. Sin esa cuenta nadie puede crear otra y el acceso solo
 - **Pruebas:** borrar, desactivar y bajar de nivel a la última cuenta devuelven 409 y no cambian nada; las mismas
   operaciones con otra cuenta de nivel 1 activa se permiten. Probar con datos `PRUEBA`, nunca con el seed.
 
-**Estado del código al 2026-10-26 (`core-management`):**
+**Estado del código (plataforma, cerrado el 2026-10-26 en la etapa 3, SEG0):**
 
-| Caso | Hoy | Falta |
-|---|---|---|
-| Admin. de organización: borrar | Protegido (cuenta nivel 1 activos; el borrado desactiva el usuario) | Clave i18n en lugar de texto fijo |
-| Admin. de organización: bajar de nivel | Protegido (otros nivel 1 activos) | Clave i18n en lugar de texto fijo |
-| Superadmin: borrar | Cuenta **todos** los superadmins, de cualquier nivel y estado; lanza `IllegalStateException` | Contar solo nivel 1 activos; `BusinessException` 409 |
-| Superadmin: bajar de nivel o desactivar | **Sin protección** | Agregar la validación |
-| Desactivar desde otras pantallas (usuarios) | Sin verificar | Revisar que pasen por la misma regla |
+| Caso | Implementación |
+|---|---|
+| Admin. de organización: borrar o bajar de nivel | `TenantAdminServiceImpl`, otros nivel 1 activos; clave `tenant_admin.error.last_level1` (409) |
+| Superadmin: borrar, bajar de nivel o desactivar | `SuperAdminServiceImpl`, solo nivel 1 activos (`countByLevelAndUserEnabledTrueAndIdNot`); clave `super_admin.error.last_level1` (409) |
+| Darse de baja uno mismo (`DELETE /account`) | `core-auth` pregunta a cada `AccountDeactivationGuard` (Bridge) antes de desactivar; `core-management` implementa `LastAdministratorGuard` |
+
+Pruebas: unitarias de los tres casos; Cucumber del administrador de organización con una organización creada en el
+escenario. El último SuperAdmin se prueba solo con unitarias: el único de la suite es el de seed.
 
 ### 5.7 Errores
 

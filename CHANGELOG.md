@@ -7,6 +7,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-10-26 | Regla del último administrador (§5.6.1) cerrada en la plataforma: SuperAdmin (solo nivel 1 activos, 409), baja propia vía `AccountDeactivationGuard` (Bridge en `core-auth`) y claves traducibles. Etapa 3 de la plataforma iniciada: SEG0 (además, avatar aislado por organización) y SEG1 (tokens de invitación solo como huella SHA-256). |
 | 2026-10-26 | Etapa 2 de la plataforma terminada: sin vocabulario de salud en `core-*` (organización demo `demo-org`, roles `SUPER_ADMIN`/`ADMIN`/`USER`, i18n en/es completo, plantillas de correo con `platformName`, rutas públicas solo con controlador); suite verde: 177 tests unitarios y 69 escenarios Cucumber (`amachi-platform/CLAUDE.md`). |
 | 2026-10-26 | La demo de Vitalia vive solo en la etiqueta `v1.0.0-demo` (se borró la rama `release/1.0` en `vitalia-api` y `vitalia-web`); se abre con `git switch --detach v1.0.0-demo` y un arreglo urgente crea su rama desde la etiqueta. Complementa el ADR-0005 sin cambiar su decisión. |
 | 2026-10-26 | Una sola carpeta por app: se quitan los worktrees `vitalia-api-demo` y `vitalia-web-demo`. La demo sigue en la rama `release/1.0` (etiqueta `v1.0.0-demo`) y se abre en la misma carpeta con `git switch release/1.0`; se vuelve con `git switch main`. La decisión del ADR-0005 no cambia. |
