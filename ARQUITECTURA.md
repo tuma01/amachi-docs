@@ -134,18 +134,27 @@
 - **Columna `TENANT_ID`**: guarda el `id` Long (no el código); `TENANT_CODE` se guarda al lado.
 - **Resolución** (`MultiTenantFilter`): subdominio del host en producción (`{code}.dominio`); encabezado
   `X-Tenant-Code` en desarrollo y en rutas públicas donde el visitante elige la organización.
-- **Contexto**: `TenantContext.getTenantId()` / `getTenantCode()` (ThreadLocal).
-- **Aislamiento**: filtro Hibernate `tenantFilter` activado por aspecto; `@PrePersist` de `AuditableTenantEntity`
-  asigna el tenant. **Prohibido** desactivar el filtro. Las consultas **nativas** no pasan por el filtro: filtran por
-  tenant explícitamente.
+- **Contexto**: `TenantContext.getTenantId()` / `getTenantCode()` (ThreadLocal), fijado por los filtros de la
+  petición (`MultiTenantFilter`, `JwtAuthenticationFilter`).
+- **Aislamiento (SEG6, ISO 27001 A.8.3)**: `AuditableTenantEntity.tenantId` lleva **`@TenantId`** de Hibernate.
+  `TenantIdentifierResolver` da a cada sesión su organización y Hibernate filtra **toda** consulta (derivada, `@Query`,
+  Specification) y toda carga por id: el registro de otra organización **no existe** (404), sin código en el servicio.
+  Escribir un registro de otra organización falla. Sin organización en el contexto la sesión no ve nada (nunca todo).
+  No se agregan predicados de tenant ni métodos `...AndTenantId` que solo repitan la organización de la sesión.
+- **SuperAdmin = alcance de plataforma**: su petición no se filtra (tenant *root*) y ve todas las organizaciones;
+  **no** hay ramas `isSuperAdmin() ? findAll : …` en servicios ni Specifications. `isSuperAdmin()` queda solo para
+  reglas de negocio (quién puede pedir otra organización, roles que no se muestran).
+- **Cambiar de organización a mitad de una ejecución**: **solo** con `TenantScope` (sesión y transacción propias,
+  restaura el contexto): `inTenant(id, code, …)` (enlace público con token, alta en otra organización),
+  `asPlatform(…)` (jobs nocturnos, buscar un token antes de saber su organización), `inTenantContext(…)` (hilo
+  `@Async` con una transacción por paso). Nunca `TenantContext.set…` a mano: la sesión ya abierta no se entera. Lo
+  vigila `TenantIsolationArchitectureTest`.
+- **Organización de un registro**: la toma de su relación `tenant` si la tiene (`owningTenant()`, columna `TENANT_ID`
+  única y de solo lectura en la relación), si no del contexto. Una entidad nueva con `TENANT_ID` hereda de
+  `AuditableTenantEntity` (lo exige el test de arquitectura).
+- **SQL nativo y `JdbcTemplate`** no pasan por `@TenantId`: filtran por organización explícitamente o son de
+  plataforma a propósito (numeración de facturas, bitácora, límite de tasa).
 - **El `tenantCode` nunca viaja en el body** de un request ni en un DTO.
-- **Listas de plataforma del SuperAdmin**: una lista de una entidad que el SuperAdmin gobierna en **todas** las
-  organizaciones no puede filtrar por el tenant de la sesión (`GLOBAL`): la Specification usa
-  `isSuperAdmin() ? buildPlatformPredicates : buildBasePredicates` y el servicio sobrescribe el paginado para el
-  SuperAdmin. Lo mismo al **leer y editar** un registro (`findById` en vez de `findByIdAndTenantId`). Modelo:
-  `TenantConfigServiceImpl`. Una entidad de negocio de una organización **siempre** usa `buildBasePredicates`.
-- Una entidad de una organización creada por la plataforma fija `tenantId`/`tenantCode` de la organización elegida
-  antes de guardar (si no, `@PrePersist` le pone `GLOBAL`).
 - **Datos compartidos entre tenants** (catálogos, datos de mercado, geografía): entidades **globales** sin
   `TENANT_ID`, leídas por todos, escritas solo por el SuperAdmin o por procesos de la plataforma.
 

@@ -7,6 +7,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-10-27 | Aislamiento por organización con `@TenantId` de Hibernate (§4): filtra toda consulta y carga por id, el SuperAdmin es alcance de plataforma, `TenantScope` es el único cambio de organización a mitad de una ejecución; se eliminan `@TenantAware`, el filtro `tenantFilter` (nunca se activaba) y las ramas `isSuperAdmin()`. Etapa 3 de la plataforma: SEG6. |
 | 2026-10-26 | Bitácora solo agregar y encadenada por HMAC-SHA256 por organización (clave versionada fuera del repositorio, `AUDIT_CHAIN_KEY`), verificación de integridad, retención configurable con ancla y lecturas sensibles con `@AuditedRead` (§8 de `ARQUITECTURA.md`). Etapa 3 de la plataforma: SEG11. |
 | 2026-10-26 | Errores en RFC 9457 (`application/problem+json`, extensión `errors`), claves de idempotencia en los POST críticos y concurrencia con `ETag`/`If-Match` (412) o `version` (409) (§5.7); límite de tasa con 429 + `Retry-After`. Etapa 3 de la plataforma: SEG7, SEG8, SEG9, SEG10 y SEG12. |
 | 2026-10-26 | Regla del último administrador (§5.6.1) cerrada en la plataforma: SuperAdmin (solo nivel 1 activos, 409), baja propia vía `AccountDeactivationGuard` (Bridge en `core-auth`) y claves traducibles. Etapa 3 de la plataforma iniciada: SEG0 (además, avatar aislado por organización) y SEG1 (tokens de invitación solo como huella SHA-256). |
