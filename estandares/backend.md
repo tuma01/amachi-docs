@@ -15,11 +15,16 @@
 - `@Audited` en entidades de negocio; FK a un catálogo global → `@Audited(targetAuditMode = NOT_AUDITED)`.
 - Los roles de una persona (cliente, empleado, analista…) **componen** `Person` (`@ManyToOne`); nunca heredan de ella.
   Unicidad `(FK_ID_PERSON, TENANT_ID, IS_DELETED)`.
-- Datos personales sensibles cifrados con `@Convert(EncryptedStringConverter)` (AES-256, clave en variable de entorno,
-  nunca en el repositorio). Con IV determinístico se conservan `UNIQUE` y la búsqueda exacta; en columnas cifradas
-  solo se busca por igualdad (nunca `LIKE` ni `lower()`).
-- Clases que instancia JPA/Envers **fuera de Spring** (`EncryptedStringConverter`, `AuditRevisionListener`) no admiten
-  `@Autowired`/`@Value`: leen de holders estáticos.
+- **Datos sensibles cifrados (SEG5)**: `@Convert(converter = EncryptedStringConverter.class)` = AES-256-GCM con nonce
+  aleatorio y versión de clave (`v<n>:…`, columna `VARCHAR(600)` para 100 caracteres). La columna cifrada **nunca** es
+  `UNIQUE` ni se compara: a su lado va su **índice ciego** `@BlindIndex(source, purpose)` (`CHAR(64)`, HMAC-SHA256 con su
+  propia clave, valor normalizado), que lleva el `UNIQUE` y las búsquedas exactas
+  (`findByNationalIdIndex(blindIndexer.of(Person.NATIONAL_ID_INDEX, valor))`); la entidad declara
+  `@EntityListeners(BlindIndexListener.class)` y el índice es `@NotAudited`. Nunca `LIKE` sobre un dato cifrado. Lo
+  vigila `DataProtectionArchitectureTest`. Claves: `app.data-protection.*`, por variable de entorno, sin valor por
+  defecto. Nunca un dato personal en los logs.
+- Converters y entity listeners de JPA son beans de Spring (`SpringBeanContainer`): reciben sus dependencias por
+  constructor, sin holders estáticos. Solo `AuditRevisionListener` (Envers) sigue leyendo un holder.
 - `@Builder.Default` de Lombok **no aplica** con MapStruct: todo campo `NOT NULL` con valor por defecto se asigna en el
   servicio.
 - Hibernate solo ejecuta el `@PrePersist` de la clase más específica: una subclase que declare el suyo conserva el
