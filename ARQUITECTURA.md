@@ -83,7 +83,7 @@
 | `core-common` | Clases base (`BaseEntity`, `BaseService`, `BaseSpecification`, `BaseController`), `PageResponseDto`, excepciones, utilities (`TextSearch`), `AppConstants`, `GlobalCatalogAccess` | — | — |
 | `core-geography` | Países y división política (catálogo global con niveles por país) | `GEO_` | `V2_*` |
 | `core-domain` | `Person`, `Tenant`, `PersonTenant`, `AuditableTenantEntity`, auditoría Envers | `DMN_` | `V3_*` |
-| `core-auth` | Login JWT, `SecurityConfig`, `MultiTenantFilter`, roles, invitaciones, `AuthContextHolder`, notificaciones in-app, bitácora de auditoría | `AUT_` | `V4_*` |
+| `core-auth` | Tokens de Keycloak (resource server), cuentas en Keycloak (`IdentityAccounts`), `SecurityConfig`, `MultiTenantFilter`, roles, invitaciones, `AuthContextHolder`, notificaciones in-app, bitácora de auditoría | `AUT_` | `V4_*` |
 | `core-management` | Gobierno de la plataforma: SuperAdmin, administradores de cada organización, configuración por organización, servicios contratados, facturación, temas, panel de plataforma | `MGT_` | `V8_*` |
 | `platform-boot` | Aplicación ejecutable: `application*.yml`, `GlobalExceptionHandler`, mensajes i18n, configuración (Flyway, Jackson, reloj), seeders de desarrollo genéricos | — | — |
 | `platform-test` | Cucumber + Testcontainers de la plataforma y test de arquitectura de seguridad | — | — |
@@ -175,6 +175,13 @@
   completo (método, ruta, regla) para auditorías.
 - **403 antes que 400**: `EarlyRoleAuthorizationInterceptor` evalúa el mismo `@PreAuthorize` antes de leer el cuerpo
   (si no, quien no tiene permiso recibe 400 y aprende las reglas de validación).
+- **Identidad = Keycloak (ADR-0006)**: la plataforma **no tiene login ni contraseñas**. La API acepta solo tokens del
+  realm `amachi` (firma por JWKS, emisor, audiencia `amachi-api`, vigencia en tiempo real); la organización sale del
+  claim `organization` y debe ser la de la petición; los permisos se leen de la plataforma (`EffectiveAccess`,
+  `UserTenantRole`), nunca del token. Toda alta (invitación, administrador creado, bootstrap) pasa por
+  `IdentityAccounts`: vincula `AUT_USER.KEYCLOAK_ID`, agrega la membresía y Keycloak le envía a la persona el email
+  para crear su contraseña. Reset de un administrador = email de Keycloak. Los inicios de sesión se auditan en los
+  eventos de Keycloak. Lo vigila `IdentityArchitectureTest` (ninguna clase usa `PasswordEncoder` ni emite JWT).
 - **Rutas públicas: una sola fuente** `PublicEndpoints` (leída por `SecurityConfig`, el filtro JWT y
   `MultiTenantFilter`). Dos conceptos distintos: *sin sesión* y *sin organización* (una búsqueda pública entre
   organizaciones no tiene ni una ni otra; el portal público de una organización no tiene sesión pero sí organización).
