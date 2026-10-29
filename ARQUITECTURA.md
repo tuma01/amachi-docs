@@ -182,6 +182,12 @@
   `IdentityAccounts`: vincula `AUT_USER.KEYCLOAK_ID`, agrega la membresía y Keycloak le envía a la persona el email
   para crear su contraseña. Reset de un administrador = email de Keycloak. Los inicios de sesión se auditan en los
   eventos de Keycloak. Lo vigila `IdentityArchitectureTest` (ninguna clase usa `PasswordEncoder` ni emite JWT).
+- **Segundo factor, bloqueo y política (SEG3, realm como código `keycloak/amachi-realm-*.json`)**: los roles de
+  `app.security.oidc.second-factor-roles` (por defecto `SUPER_ADMIN`, `ADMIN`; un sector agrega los suyos) reciben
+  el rol de realm `mfa-required` al darse de alta y el flujo `amachi-browser` les exige OTP en cada inicio de
+  sesión (lo configuran en el primero). 5 fallos bloquean la cuenta 1 minuto más cada vez, hasta 15. Contraseña:
+  12 a 128 caracteres, ni el usuario ni el email, ninguna de las 5 anteriores, sin reglas de composición
+  (NIST 800-63B). Ningún cliente de producción tiene *direct grant* (saltaría el flujo del navegador).
 - **Rutas públicas: una sola fuente** `PublicEndpoints` (leída por `SecurityConfig`, el filtro JWT y
   `MultiTenantFilter`). Dos conceptos distintos: *sin sesión* y *sin organización* (una búsqueda pública entre
   organizaciones no tiene ni una ni otra; el portal público de una organización no tiene sesión pero sí organización).

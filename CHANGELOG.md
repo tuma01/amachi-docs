@@ -7,6 +7,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-10-29 | Segundo factor obligatorio para administradores (rol `mfa-required` puesto por la plataforma + flujo `amachi-browser`), bloqueo progresivo y política de contraseñas NIST en el realm como código (§6). Etapa 3: SEG3. |
 | 2026-10-29 | La plataforma deja de autenticar: identidad solo en Keycloak (§6, ADR-0006). Cuentas y membresías por la Admin API (`IdentityAccounts`), contraseña creada por la persona desde el email de Keycloak, reset de administrador por email; borrados el login, JWT propios, refresh, lista negra, contraseñas, `/auth/register`, la política de contraseñas por organización y sus tablas; inicios de sesión auditados en eventos de Keycloak. |
 | 2026-10-28 | ADR-0006: Keycloak con un realm y Organizations (una por tenant), la contraseña se crea solo en Keycloak, sin autorregistro, BFF en módulo aparte (`platform-bff`); la plataforma sigue siendo la fuente única de la autorización. |
 | 2026-10-27 | Datos sensibles con AES-256-GCM (nonce aleatorio, versión de clave) e índice ciego HMAC para unicidad y búsquedas (`@BlindIndex`); claves `app.data-protection.*` obligatorias, sin valor por defecto; converters como beans de Spring (estándares backend §5.1). Etapa 3 de la plataforma: SEG5. |
