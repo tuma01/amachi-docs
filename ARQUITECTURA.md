@@ -188,6 +188,17 @@
   sesión (lo configuran en el primero). 5 fallos bloquean la cuenta 1 minuto más cada vez, hasta 15. Contraseña:
   12 a 128 caracteres, ni el usuario ni el email, ninguna de las 5 anteriores, sin reglas de composición
   (NIST 800-63B). Ningún cliente de producción tiene *direct grant* (saltaría el flujo del navegador).
+- **BFF (SEG4, `platform-bff`, paquete `com.amachi.bff`, sin dependencias de `core-*`)**: la única puerta del
+  navegador. Inicia la sesión con Keycloak (código + PKCE, cliente confidencial `amachi-bff`) pidiendo
+  `organization:<alias>` (`/oauth2/authorization/keycloak?organization=<alias>`); los tokens quedan en la sesión del
+  servidor (Spring Session JDBC, tabla `BFF_SESSION`, cada atributo sellado con AES-256-GCM, `BFF_SEAL_KEY`) y el
+  navegador solo recibe `AMACHI_SESSION` (`HttpOnly; Secure; SameSite=Strict`). La petición de autorización en curso
+  va en una cookie sellada `Lax` de 5 minutos, solo hacia el callback (con `Strict` el regreso desde Keycloak no la
+  traería). `/api/**` se reenvía a la API con el token (renovado con el refresh token) y `X-Tenant-Code` de la
+  organización de la sesión; solo pasan las cabeceras del contrato (`If-Match`, `Idempotency-Key`, `ETag`,
+  `Location`, `Retry-After`…), nunca cookies. Sin sesión: `401` (no redirige). CSRF para SPA (`XSRF-TOKEN` →
+  `X-XSRF-TOKEN`). `POST /bff/logout` termina la sesión y responde `202` con la URL de cierre de Keycloak en
+  `Location`. `GET /bff/user`: quién es y en qué organización entró. Sin CORS: el SPA y el BFF comparten origen.
 - **Rutas públicas: una sola fuente** `PublicEndpoints` (leída por `SecurityConfig`, el filtro JWT y
   `MultiTenantFilter`). Dos conceptos distintos: *sin sesión* y *sin organización* (una búsqueda pública entre
   organizaciones no tiene ni una ni otra; el portal público de una organización no tiene sesión pero sí organización).
