@@ -58,5 +58,9 @@ instante y no se duplica en Keycloak).
   actual; después invitaciones y cuentas vía Keycloak y borrado del login propio; MFA, bloqueo y política (SEG3); BFF
   (SEG4).
 - El frontend de la etapa 5 no maneja tokens: usa la cookie del BFF.
+- **Actualización 2026-10-29 (implementación del BFF)**: sin Spring Cloud Gateway, que no tiene versión para Spring
+  Boot 4.1. El BFF usa solo piezas estables de Spring: `oauth2Login` (código + PKCE), Spring Session JDBC (sesión
+  sellada con AES-256-GCM) y un proxy propio y mínimo hacia la API (`RestClient`, lista cerrada de cabeceras). La
+  decisión 4a no cambia.
 - Vitalia adopta lo mismo al migrar a la plataforma; sus contraseñas BCrypt necesitan una estrategia de migración
   (Keycloak no las lee sin una extensión), a decidir en ese momento.
