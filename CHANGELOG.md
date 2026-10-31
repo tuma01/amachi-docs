@@ -7,6 +7,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-10-30 | Privacidad (§3.1, §6): módulo `core-privacy` (`PRV_`, `V6_*`) y punto de extensión `PersonalDataContributor` en `core-common`; todo módulo con datos de personas lo implementa. Primer derecho: acceso y portabilidad (JSON descargable, la persona o el admin de su organización, en la bitácora). |
 | 2026-10-29 | BFF (`platform-bff`, §6): el navegador entra con Keycloak por código + PKCE y solo recibe una cookie de sesión `HttpOnly; Secure; SameSite=Strict`; tokens en la sesión del servidor (MySQL, sellados AES-256-GCM), proxy `/api/**` con el token, CSRF para SPA y cierre de sesión con Keycloak. Sin Spring Cloud Gateway (sin versión para Spring Boot 4.1): piezas de Spring Security y Spring Session (ADR-0006, actualización). Etapa 3: SEG4. |
 | 2026-10-29 | Segundo factor obligatorio para administradores (rol `mfa-required` puesto por la plataforma + flujo `amachi-browser`), bloqueo progresivo y política de contraseñas NIST en el realm como código (§6). Etapa 3: SEG3. |
 | 2026-10-29 | La plataforma deja de autenticar: identidad solo en Keycloak (§6, ADR-0006). Cuentas y membresías por la Admin API (`IdentityAccounts`), contraseña creada por la persona desde el email de Keycloak, reset de administrador por email; borrados el login, JWT propios, refresh, lista negra, contraseñas, `/auth/register`, la política de contraseñas por organización y sus tablas; inicios de sesión auditados en eventos de Keycloak. |
