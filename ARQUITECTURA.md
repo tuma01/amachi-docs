@@ -85,6 +85,7 @@
 | `core-domain` | `Person`, `Tenant`, `PersonTenant`, `AuditableTenantEntity`, auditoría Envers | `DMN_` | `V3_*` |
 | `core-auth` | Tokens de Keycloak (resource server), cuentas en Keycloak (`IdentityAccounts`), `SecurityConfig`, `MultiTenantFilter`, roles, invitaciones, `AuthContextHolder`, notificaciones in-app, bitácora de auditoría | `AUT_` | `V4_*` |
 | `core-management` | Gobierno de la plataforma: SuperAdmin, administradores de cada organización, configuración por organización, servicios contratados, facturación, temas, panel de plataforma | `MGT_` | `V8_*` |
+| `core-privacy` | Derechos de la persona sobre sus datos (Ley 25 · GDPR · ISO 27701): acceso y portabilidad; reúne lo que cada módulo declara con `PersonalDataContributor` | `PRV_` | `V6_*` |
 | `platform-boot` | Aplicación ejecutable: `application*.yml`, `GlobalExceptionHandler`, mensajes i18n, configuración (Flyway, Jackson, reloj), seeders de desarrollo genéricos | — | — |
 | `platform-test` | Cucumber + Testcontainers de la plataforma y test de arquitectura de seguridad | — | — |
 | `<app>-<dominio>` | Módulos del sector (ej. `inverpulse-market`, `inverpulse-signals`; en Vitalia: `vitalia-medical-core`, `vitalia-medical-catalog`) | prefijo propio de 3 letras (`MKT_`, `SIG_`…) | `V10_*` en adelante, un rango por módulo |
@@ -244,6 +245,11 @@
   `AuditChain.append` con la huella HMAC del anterior de su organización; nunca se actualiza ni se borra (solo la
   retención, que deja ancla y constancia); `GET /audit-events/integrity` lo verifica. Una lectura de datos sensibles
   lleva `@AuditedRead("Tipo")` en el método del controlador (evento `SENSITIVE_DATA_READ`).
+- **Datos personales de un módulo (Ley 25, `core-privacy`)**: todo módulo que guarda datos de una persona (de la
+  plataforma o de un sector) implementa `PersonalDataContributor` (`core-common`): devuelve sus secciones como records
+  propios, en la sesión de la petición (`@TenantId` ya limita a la organización), nunca secretos ni identificadores
+  internos (id de Keycloak, huellas de token). Así la plataforma responde una solicitud completa (acceso, portabilidad)
+  sin conocer el dominio del sector; cada respuesta queda en la bitácora (`PERSONAL_DATA_EXPORTED`).
 
 ---
 
