@@ -7,6 +7,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-10-31 | Privacidad (§3.1): derecho de rectificación en `core-privacy`. La persona corrige sola su contacto; sus datos de identidad (nombres, documento, fecha de nacimiento, género, email) los pide corregir y responde un administrador con acceso total en 30 días, nunca la propia persona; el email cambia también en Keycloak y se verifica. |
 | 2026-10-30 | Privacidad (§3.1, §6): módulo `core-privacy` (`PRV_`, `V6_*`) y punto de extensión `PersonalDataContributor` en `core-common`; todo módulo con datos de personas lo implementa. Primer derecho: acceso y portabilidad (JSON descargable, la persona o el admin de su organización, en la bitácora). |
 | 2026-10-29 | BFF (`platform-bff`, §6): el navegador entra con Keycloak por código + PKCE y solo recibe una cookie de sesión `HttpOnly; Secure; SameSite=Strict`; tokens en la sesión del servidor (MySQL, sellados AES-256-GCM), proxy `/api/**` con el token, CSRF para SPA y cierre de sesión con Keycloak. Sin Spring Cloud Gateway (sin versión para Spring Boot 4.1): piezas de Spring Security y Spring Session (ADR-0006, actualización). Etapa 3: SEG4. |
 | 2026-10-29 | Segundo factor obligatorio para administradores (rol `mfa-required` puesto por la plataforma + flujo `amachi-browser`), bloqueo progresivo y política de contraseñas NIST en el realm como código (§6). Etapa 3: SEG3. |
