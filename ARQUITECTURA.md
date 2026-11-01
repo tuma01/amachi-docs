@@ -85,7 +85,7 @@
 | `core-domain` | `Person`, `Tenant`, `PersonTenant`, `AuditableTenantEntity`, auditoría Envers | `DMN_` | `V3_*` |
 | `core-auth` | Tokens de Keycloak (resource server), cuentas en Keycloak (`IdentityAccounts`), `SecurityConfig`, `MultiTenantFilter`, roles, invitaciones, `AuthContextHolder`, notificaciones in-app, bitácora de auditoría | `AUT_` | `V4_*` |
 | `core-management` | Gobierno de la plataforma: SuperAdmin, administradores de cada organización, configuración por organización, servicios contratados, facturación, temas, panel de plataforma | `MGT_` | `V8_*` |
-| `core-privacy` | Derechos de la persona sobre sus datos (Ley 25 · GDPR · ISO 27701): acceso y portabilidad (reúne lo que cada módulo declara con `PersonalDataContributor`) y rectificación (contacto al instante, identidad por solicitud que responde un administrador LEVEL_1 en 30 días) | `PRV_` | `V6_*` |
+| `core-privacy` | Derechos de la persona sobre sus datos (Ley 25 · GDPR · ISO 27701): acceso y portabilidad (reúne lo que cada módulo declara con `PersonalDataContributor`), rectificación (contacto al instante, identidad por solicitud que responde un administrador LEVEL_1 en 30 días) y supresión (cada módulo borra lo suyo con `PersonalDataEraser`; la identidad compartida solo con la última organización de la persona) | `PRV_` | `V6_*` |
 | `platform-boot` | Aplicación ejecutable: `application*.yml`, `GlobalExceptionHandler`, mensajes i18n, configuración (Flyway, Jackson, reloj), seeders de desarrollo genéricos | — | — |
 | `platform-test` | Cucumber + Testcontainers de la plataforma y test de arquitectura de seguridad | — | — |
 | `<app>-<dominio>` | Módulos del sector (ej. `inverpulse-market`, `inverpulse-signals`; en Vitalia: `vitalia-medical-core`, `vitalia-medical-catalog`) | prefijo propio de 3 letras (`MKT_`, `SIG_`…) | `V10_*` en adelante, un rango por módulo |
@@ -250,6 +250,9 @@
   propios, en la sesión de la petición (`@TenantId` ya limita a la organización), nunca secretos ni identificadores
   internos (id de Keycloak, huellas de token). Así la plataforma responde una solicitud completa (acceso, portabilidad)
   sin conocer el dominio del sector; cada respuesta queda en la bitácora (`PERSONAL_DATA_EXPORTED`).
+  El mismo módulo implementa también `PersonalDataEraser`: borra o anonimiza sus datos de la persona en la
+  organización (`Scope.ORGANIZATION`) y, cuando la plataforma se lo pide porque era su última organización, lo que
+  dependa de la identidad compartida (`Scope.IDENTITY`). Idempotente; conserva solo lo que una ley obliga a guardar.
 
 ---
 
