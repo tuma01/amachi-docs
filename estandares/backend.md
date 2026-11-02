@@ -129,7 +129,14 @@ con el `traceId` que recibe el cliente.
 **Claves de idempotencia:** los POST que crean algo crítico (organizaciones, invitaciones, cargas masivas, facturas,
 servicios contratados, administradores) aceptan `Idempotency-Key`. Misma clave y mismo pedido → la primera respuesta con
 `Idempotent-Replayed: true`; misma clave y otro pedido → 422 (`BUS_009`); mientras el primero corre → 409 (`BUS_010`).
-Una ruta nueva que crea algo que no debe duplicarse se agrega a `IdempotencyProperties.PATHS`.
+Una ruta nueva que crea algo que no debe duplicarse se agrega a `IdempotencyProperties.PATHS`. La reserva de una clave
+solo dura mientras corre el pedido (`inProgressTimeout`, 10 min por defecto): si la JVM cae a medias, la clave vuelve a
+estar libre en minutos y no 24 h después; la respuesta guardada sí vive la retención. El cuerpo se lee con tope
+(`maxBodyBytes`, 1 MiB; más → 413) y las cargas multipart se resumen en flujo, sin cargarlas en memoria.
+
+**Tamaño de página:** el que pide el cliente nunca se confía. `BaseService.getAll(search, pageIndex, pageSize)` lo acota
+(`MAX_PAGE_SIZE` 200; sin valor, `DEFAULT_PAGE_SIZE` 20; índice negativo → 0; tamaño menor que 1 → 1). Una lista con
+otro tope lo documenta en su propio servicio.
 
 **Concurrencia (`ETag` / `If-Match`):** la respuesta con un registro versionado lleva `ETag: "<version>"` y el DTO
 expone `version` de solo lectura (el mapper **nunca** la copia del cliente a la entidad). Quien edita o borra la reenvía
