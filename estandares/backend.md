@@ -222,3 +222,18 @@ en las escrituras, sin datos personales. Parámetros con el **mismo nombre** que
 - **Estilo**: Spotless (google-java-format AOSP) con `ratchetFrom: origin/main`: `./mvnw spotless:apply` formatea solo los
   archivos cambiados respecto de `main` y `spotless:check` es lo que corre el pipeline. No está enlazado a una fase: un
   build sin historial git debe compilar igual.
+
+### 5.11 Observabilidad
+- **Trazas y métricas por OTLP** (Micrometer Tracing + OpenTelemetry), por empuje: **ningún** endpoint de Actuator se expone
+  para esto (la regla de SEG7 sigue: solo `health`). Salen del proceso solo con `OBSERVABILITY_EXPORT_ENABLED=true` y las
+  direcciones del colector; sin eso la traza existe igual (el `traceId` va en el log y en los errores) pero no sale.
+- **`traceId` de la petición** en cada línea del log (`[trace:…]`) y en `errors[0].traceId` de toda respuesta de error
+  (`ErrorDetail` lo toma del contexto de log; sin traza, un UUID): quien reclama con ese identificador, el soporte encuentra
+  la petición en las trazas y en el log. Nunca se inventa otro identificador para el mismo fin.
+- **La organización es un atributo de la traza** (`tenant.code`, clave de **alta cardinalidad**: Micrometer la manda solo a
+  la traza) y **nunca una etiqueta de métrica**: una serie por cliente multiplica el coste. Se lee del atributo de la petición
+  que fija `MultiTenantFilter` (al terminar la observación el contexto del hilo ya se limpió). Una petición sin organización
+  no lleva el atributo, no uno supuesto. Ningún dato personal (email, documento, nombre) en atributos de traza ni en etiquetas.
+- Las sondas de salud (`/actuator/**`) no se trazan. El BFF abre la traza y la API la continúa con `traceparent`.
+- Prueba: un colector OTLP propio de la suite que decodifica lo recibido (`FakeOtlpCollector`): se comprueba lo que **llegó**,
+  no lo que la aplicación dice haber enviado.
