@@ -225,6 +225,11 @@
   `Clock` (`ClockConfig`, reemplazable en pruebas) y el **día en la zona de la organización** (`TenantConfig.timezone`
   o la de la plataforma) — nunca UTC por omisión. (En Vitalia: `HospitalClock`; en una app de mercados, además, la
   zona y el calendario de cada **bolsa**.)
+- **Todo instante guardado es UTC** y la JVM corre en UTC (`DefaultTimeZoneGuard.useUtc()` en cada `main`; la aplicación
+  no arranca en otra zona): el controlador JDBC convierte por la zona de la JVM, así que otra zona desplazaría cada fecha.
+  Las fechas de auditoría (`CREATED_DATE`, `LAST_MODIFIED_DATE`) salen del bean `Clock` en UTC y, donde no se puede
+  inyectar un reloj, `now(ZoneOffset.UTC)`; `TimeArchitectureTest` prohíbe `LocalDateTime.now()` y parientes. Una
+  `LocalDateTime` del sistema es UTC y la API la escribe con `Z` (`UtcLocalDateTimeConfig`).
 - **Instante vs. fecha sin hora**: un instante viaja en UTC (`OffsetDateTime`, ISO con `Z`) y cada pantalla lo muestra
   en la zona del usuario; una fecha sin hora es `LocalDate` y viaja como `"yyyy-MM-dd"` — **nunca**
   `toISOString()` de una fecha local (al este de UTC guardaría el día anterior).
