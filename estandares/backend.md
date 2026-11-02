@@ -206,3 +206,19 @@ en las escrituras, sin datos personales. Parámetros con el **mismo nombre** que
 4. `npm run gen-api`. **Nunca** editar a mano el código generado.
 - Swagger agrupado por áreas (un controlador nuevo agrega su prefijo de ruta al área que corresponde) + un grupo
   "Completo" que usa el generador.
+
+### 5.10 Hilos, tareas asíncronas y build
+- **Hilos virtuales** (`spring.threads.virtual.enabled: true`): cada petición y cada `@Scheduled` corre en uno. Nada
+  depende de un número de hilos; el recurso escaso es el pool de conexiones (`hikari.maximum-pool-size`): más peticiones
+  que conexiones esperan, no se rechazan. Los `ThreadLocal` (`TenantContext`, sesión) los limpian sus filtros; un hilo
+  virtual nunca se reutiliza, así que nada pasa a la petición siguiente. Un código nuevo no usa `synchronized` alrededor
+  de E/S ni un pool propio para trabajo de E/S.
+- **`@Async`**: el executor por defecto es explícito (`applicationTaskExecutor`, hilos virtuales con tope de tareas
+  simultáneas): al declarar cualquier otro `Executor`, Spring Boot no crea el suyo y el `@Async` sin nombre cae en un hilo de
+  sistema nuevo por tarea sin tope. Un trabajo que debe ir en serie o acotado lleva su propio executor con nombre y
+  `@Async("nombre")` (cargas masivas: un solo hilo). Un `@Async` no hereda la organización: usa `TenantScope`.
+- **Maven Wrapper**: se usa `./mvnw` (misma versión de Maven en cada máquina y en el pipeline). `.mvn/jvm.config` da a
+  Maven los `--add-exports jdk.compiler/…` que necesita google-java-format con Java 25.
+- **Estilo**: Spotless (google-java-format AOSP) con `ratchetFrom: origin/main`: `./mvnw spotless:apply` formatea solo los
+  archivos cambiados respecto de `main` y `spotless:check` es lo que corre el pipeline. No está enlazado a una fase: un
+  build sin historial git debe compilar igual.
