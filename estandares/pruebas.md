@@ -23,6 +23,10 @@
 - **Una prueba que no se ejecuta no prueba nada**: el `pom` del módulo de integración lista qué clases corre (`includes`); una clase
   JUnit nueva fuera de esos patrones pasa en el IDE y nunca en la suite. Al agregar una, confirmar que aparece en
   `Running …` de la salida del build completo.
+- **Pipeline** (GitHub Actions, un `ci.yml` por aplicación): `./mvnw -B install` con Java 25 y Docker (la suite completa, sin ninguna variable de
+  entorno propia de una máquina), `spotless:check`, SBOM CycloneDX, gitleaks en cada pull request, Dependency-Check periódico y
+  `main` protegida exigiendo el build. Toda acción de terceros fijada por commit (versión en un comentario); un secreto, solo
+  de lectura y con un único propósito. Un workflow que nadie ejecutó no está validado: decir que no se probó en GitHub.
 - **No compilar con Maven mientras el backend corre en el IDE** (rompe sus clases en caliente): validar en una copia
   aislada del repositorio.
 - Método para cambios que se repiten: template → **un** ejemplo validado → el resto, abriendo cada archivo.
