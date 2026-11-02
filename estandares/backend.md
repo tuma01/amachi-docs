@@ -22,7 +22,11 @@
   (`findByNationalIdIndex(blindIndexer.of(Person.NATIONAL_ID_INDEX, valor))`); la entidad declara
   `@EntityListeners(BlindIndexListener.class)` y el índice es `@NotAudited`. Nunca `LIKE` sobre un dato cifrado. Lo
   vigila `DataProtectionArchitectureTest`. Claves: `app.data-protection.*`, por variable de entorno, sin valor por
-  defecto. Nunca un dato personal en los logs.
+  defecto. **Rotación**: se añade la clave nueva, `active-key` apunta a ella y `FieldReEncryptionService` (cada noche, por
+  lotes, segura entre instancias) re-cifra lo que cifró la anterior en **todas** las columnas con `EncryptedStringConverter`
+  —las encuentra en las entidades— y en su historial `_AUD`; la clave vieja se retira cuando ya no quedan valores con ella
+  (lo registra el log). Un campo cifrado necesita `@Column(name)` explícito. El índice ciego no rota. Nunca un dato personal
+  en los logs.
 - Converters y entity listeners de JPA son beans de Spring (`SpringBeanContainer`): reciben sus dependencias por
   constructor, sin holders estáticos. Solo `AuditRevisionListener` (Envers) sigue leyendo un holder.
 - `@Builder.Default` de Lombok **no aplica** con MapStruct: todo campo `NOT NULL` con valor por defecto se asigna en el
