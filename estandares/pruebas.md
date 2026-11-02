@@ -27,6 +27,12 @@
   entorno propia de una máquina), `spotless:check`, SBOM CycloneDX, gitleaks en cada pull request, Dependency-Check periódico y
   `main` protegida exigiendo el build. Toda acción de terceros fijada por commit (versión en un comentario); un secreto, solo
   de lectura y con un único propósito. Un workflow que nadie ejecutó no está validado: decir que no se probó en GitHub.
+- **Arquitectura verificada con ArchUnit**, en cada build: dirección de los módulos sin ciclos, capas (un controlador no usa
+  repositorios, la persistencia no sube a servicios) y nombres (`*Controller`, `*Repository`, `*Service`). Una regla que falla
+  se corrige en el código, no se silencia; una regla que no encuentra clases falla (no queda vacía en silencio).
+- **Escaneo dinámico (OWASP ZAP)** de la API levantada de verdad y autenticada, periódico y a mano, no en cada pull request. Se
+  empieza solo informando; las reglas que deban fallar el build se añaden tras el primer informe. Para pasar el token a ZAP, la
+  variable `ZAP_AUTH_HEADER_VALUE` (la sintaxis `replacer` con espacios no llegó a las peticiones: comprobado).
 - **No compilar con Maven mientras el backend corre en el IDE** (rompe sus clases en caliente): validar en una copia
   aislada del repositorio.
 - Método para cambios que se repiten: template → **un** ejemplo validado → el resto, abriendo cada archivo.
