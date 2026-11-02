@@ -20,6 +20,9 @@
   día, en la zona de la organización (Cucumber con un reloj movible y pasos "la hora es…", "pasan N minutos").
 - **Contrato**: el `openapi.json` nuevo difiere del anterior solo en lo esperado.
 - Datos de prueba nombrados "PRUEBA…" y borrados al terminar; nunca pruebas destructivas sobre datos sembrados.
+- **Una prueba que no se ejecuta no prueba nada**: el `pom` del módulo de integración lista qué clases corre (`includes`); una clase
+  JUnit nueva fuera de esos patrones pasa en el IDE y nunca en la suite. Al agregar una, confirmar que aparece en
+  `Running …` de la salida del build completo.
 - **No compilar con Maven mientras el backend corre en el IDE** (rompe sus clases en caliente): validar en una copia
   aislada del repositorio.
 - Método para cambios que se repiten: template → **un** ejemplo validado → el resto, abriendo cada archivo.
