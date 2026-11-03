@@ -33,6 +33,10 @@
 - **Escaneo dinámico (OWASP ZAP)** de la API levantada de verdad y autenticada, periódico y a mano, no en cada pull request. Se
   empieza solo informando; las reglas que deban fallar el build se añaden tras el primer informe. Para pasar el token a ZAP, la
   variable `ZAP_AUTH_HEADER_VALUE` (la sintaxis `replacer` con espacios no llegó a las peticiones: comprobado).
+- **Infraestructura de prueba compartida**: contenedores, cliente de Keycloak, pasos HTTP y reloj movible viven en un módulo
+  publicable (`platform-test-support`) que cada aplicación importa con `<scope>test</scope>`; nadie la copia. Cada suite trae su
+  realm de Keycloak (las cuentas de la plataforma más las suyas) y lo señala con `-Dplatform.test.keycloak-realm`. Lo propio
+  de una aplicación (sus pasos, sus datos, sus reglas de arquitectura) se queda en su módulo de pruebas.
 - **No compilar con Maven mientras el backend corre en el IDE** (rompe sus clases en caliente): validar en una copia
   aislada del repositorio.
 - Método para cambios que se repiten: template → **un** ejemplo validado → el resto, abriendo cada archivo.
