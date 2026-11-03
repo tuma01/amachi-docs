@@ -237,3 +237,16 @@ en las escrituras, sin datos personales. Parámetros con el **mismo nombre** que
 - Las sondas de salud (`/actuator/**`) no se trazan. El BFF abre la traza y la API la continúa con `traceparent`.
 - Prueba: un colector OTLP propio de la suite que decodifica lo recibido (`FakeOtlpCollector`): se comprueba lo que **llegó**,
   no lo que la aplicación dice haber enviado.
+
+### 5.12 La aplicación y la plataforma: una librería sin `main` y un `main` por aplicación
+- La plataforma se entrega como una **librería sin clase `main`** (`platform-starter`): todos los `core-*` más la configuración
+  transversal (errores RFC 9457, executors con hilos virtuales, observabilidad, reloj y fechas UTC, OpenAPI, Flyway, mensajes,
+  logging) y los valores por defecto. **Cada aplicación tiene su propio `main`** (la plataforma sola, un sector): nunca hay dos
+  en el mismo programa, y ninguna aplicación de sector depende del módulo ejecutable de la plataforma.
+- **Los valores por defecto de la librería tienen la prioridad más baja** (`EnvironmentPostProcessor` que los añade al final):
+  lo que la aplicación define (su `application.yml`, sus perfiles, las variables de entorno) los sobrescribe clave a clave. No se
+  usa `spring.config.import` para esto: Spring Boot da prioridad a lo importado sobre el archivo que lo importa.
+- **La aplicación pone lo suyo**: `spring.application.name`, el puerto, el perfil activo, su bootstrap y sus mensajes. Los
+  mensajes se amplían sin copiar los de la plataforma: `spring.messages.basename: ${platform.messages.basenames},i18n/<sector>/messages`.
+- Lo que la plataforma arregla en esa configuración llega a todas las aplicaciones al actualizar la versión; ninguna la copia.
+- Prueba: un test fija que lo definido por la aplicación gana al valor por defecto y que el valor por defecto solo rellena lo que falta.
