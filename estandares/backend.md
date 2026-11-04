@@ -250,3 +250,22 @@ en las escrituras, sin datos personales. Parámetros con el **mismo nombre** que
   mensajes se amplían sin copiar los de la plataforma: `spring.messages.basename: ${platform.messages.basenames},i18n/<sector>/messages`.
 - Lo que la plataforma arregla en esa configuración llega a todas las aplicaciones al actualizar la versión; ninguna la copia.
 - Prueba: un test fija que lo definido por la aplicación gana al valor por defecto y que el valor por defecto solo rellena lo que falta.
+
+### 5.13 Una aplicación de sector sobre la plataforma
+- **Qué aporta el sector y qué la plataforma.** La plataforma da identidad (Keycloak), organizaciones, roles, auditoría
+  encadenada, cifrado, privacidad, errores y observabilidad; el sector da su dominio. Un sector **no copia** el `core`: depende de
+  `platform-starter` (BOM `amachi-platform-dependencies`) y de `platform-test-support` en sus pruebas.
+- **Su organización es una extensión de `Organization`** (JOINED, con su discriminador): los datos comunes (razón social,
+  identificador fiscal, contactos) son de la plataforma y la tabla del sector solo lleva lo propio. Un sector crea la primera
+  organización del bootstrap con una `TenantBootstrapFactory` de su tipo y lo configura en `tenantLocal.type`.
+- **Roles = datos.** El sector agrega los suyos al catálogo `AUT_ROLE` en su propia migración (ids desde 101; los de la
+  plataforma son 1-3) y el perfil de cada rol lo crea un `DomainEntityProvider` (el rol llega como código y sus datos como
+  atributos; nunca por `ThreadLocal`).
+- **Eventos y notificaciones propios**: enums del sector que implementan `AuditEventType` y `NotificationType`.
+- **El aislamiento por organización es del framework** (`@TenantId`): no existe "buscar por id y organización";
+  `findById` de un registro ajeno ya no encuentra nada. Leer entre organizaciones es un acto de plataforma
+  (`TenantScope.asPlatform`) y exige revisión de privacidad.
+- **El `main` del sector** llama a `DefaultTimeZoneGuard.useUtc()` (la aplicación se niega a arrancar si la zona de la JVM no es
+  UTC); las migraciones del sector van desde `V10` (el catálogo en `V10_0_*`); las pruebas traen su propio realm de Keycloak.
+- **Lo que la plataforma aún no deja hacer a un sector** (puntos de extensión pendientes): declarar rutas públicas propias
+  (hoy exigen sesión; falla del lado seguro) y la firma por reautenticación (hoy falla cerrada).
