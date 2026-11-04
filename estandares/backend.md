@@ -267,5 +267,11 @@ en las escrituras, sin datos personales. Parámetros con el **mismo nombre** que
   (`TenantScope.asPlatform`) y exige revisión de privacidad.
 - **El `main` del sector** llama a `DefaultTimeZoneGuard.useUtc()` (la aplicación se niega a arrancar si la zona de la JVM no es
   UTC); las migraciones del sector van desde `V10` (el catálogo en `V10_0_*`); las pruebas traen su propio realm de Keycloak.
-- **Lo que la plataforma aún no deja hacer a un sector** (puntos de extensión pendientes): declarar rutas públicas propias
-  (hoy exigen sesión; falla del lado seguro) y la firma por reautenticación (hoy falla cerrada).
+- **Rutas públicas de un sector** (portal de reservas, directorio): las declara con un bean `PublicRoutesContributor`, no
+  tocando la lista de la plataforma. La plataforma **valida cada patrón al arrancar y se niega a arrancar** si no cuelga de
+  `/public/<nombre>/…` (nunca `/public/**`, nunca una ruta protegida de la plataforma): abrir una ruta sin sesión es una decisión
+  de seguridad y un sector no puede abrir las de la plataforma. Lo que una ruta pública hace es del sector: expone solo lo que la
+  organización publica, valida todo lo que recibe y **limita por IP** las rutas que se pueden martillar; el contador es por
+  patrón (un código de confirmación no se prueba "uno a uno" con cuota nueva cada vez). La organización de una ruta pública sale
+  del subdominio, o de la cabecera cuando el visitante la eligió en un directorio (`visitorChosenTenant`).
+- **Lo que la plataforma aún no deja hacer a un sector** (pendiente): la firma por reautenticación (hoy falla cerrada).
