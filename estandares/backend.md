@@ -274,4 +274,11 @@ en las escrituras, sin datos personales. Parámetros con el **mismo nombre** que
   organización publica, valida todo lo que recibe y **limita por IP** las rutas que se pueden martillar; el contador es por
   patrón (un código de confirmación no se prueba "uno a uno" con cuota nueva cada vez). La organización de una ruta pública sale
   del subdominio, o de la cabecera cuando el visitante la eligió en un directorio (`visitorChosenTenant`).
+- **Trabajo de fondo y datos iniciales de un sector**: entran a una organización con `TenantScope` (`inTenant` abre su sesión y
+  transacción; `inTenantContext` para tareas que conservan sus propias transacciones; `asPlatform` para lo que lee varias
+  organizaciones a propósito), nunca con `TenantContext.set…/clear`. Sin ámbito, el filtro de `@TenantId` falla cerrado o
+  devuelve vacío en silencio.
+- **El tiempo**: lo ocurrido es un instante en UTC (bean `Clock`, que los tests mueven); el día de calendario de la organización sale
+  de un reloj propio del sector con su zona; una entidad, que no puede inyectar, usa `now(ZoneOffset.UTC)`. El sector copia el
+  `TimeArchitectureTest` de la plataforma para que ningún `now()` sin zona vuelva a entrar.
 - **Lo que la plataforma aún no deja hacer a un sector** (pendiente): la firma por reautenticación (hoy falla cerrada).
