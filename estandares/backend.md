@@ -281,6 +281,11 @@ en las escrituras, sin datos personales. Parámetros con el **mismo nombre** que
 - **El tiempo**: lo ocurrido es un instante en UTC (bean `Clock`, que los tests mueven); el día de calendario de la organización sale
   de un reloj propio del sector con su zona; una entidad, que no puede inyectar, usa `now(ZoneOffset.UTC)`. El sector copia el
   `TimeArchitectureTest` de la plataforma para que ningún `now()` sin zona vuelva a entrar.
+- **Derechos de la persona** (acceso, supresión): el sector implementa `PersonalDataContributor` (qué guarda de la persona, por secciones),
+  `PersonalDataEraser` (anonimiza o borra lo suyo, solo en la organización de la solicitud con `Scope.ORGANIZATION`; la identidad y la
+  cuenta son de la plataforma) y, si hay cuidados en curso que impiden irse, un `AccountDeactivationGuard`. Lo que la ley obliga a conservar
+  (una historia clínica) se anonimiza, no se borra, y se declara qué se conserva. Una sola rutina de anonimización para todos los caminos
+  que lleguen a ella.
 - **Eventos de auditoría propios**: el enum del sector implementa `AuditEventType` (se guarda por su `code()` en la cadena de la
   organización, igual que los de la plataforma). El mensaje es una clave `AuditMessage.of("clave", "param", valor…)`: no se escribe
   una frase en el backend; la traduce el frontend con `audit_message.<clave>` en cada idioma, así que toda clave nueva se agrega al
