@@ -281,4 +281,7 @@ en las escrituras, sin datos personales. Parámetros con el **mismo nombre** que
 - **El tiempo**: lo ocurrido es un instante en UTC (bean `Clock`, que los tests mueven); el día de calendario de la organización sale
   de un reloj propio del sector con su zona; una entidad, que no puede inyectar, usa `now(ZoneOffset.UTC)`. El sector copia el
   `TimeArchitectureTest` de la plataforma para que ningún `now()` sin zona vuelva a entrar.
-- **Lo que la plataforma aún no deja hacer a un sector** (pendiente): la firma por reautenticación (hoy falla cerrada).
+- **Actos sensibles** (firmar un documento clínico, aprobar un pago): el sector llama a `RecentAuthentication.require()` al
+  empezar el acto; sin una autenticación de hace segundos (`auth_time`) responde `401` con
+  `WWW-Authenticate: Bearer error="insufficient_user_authentication"` y el cliente entra de nuevo por el BFF
+  (`reauthenticate=true`). Ninguna contraseña viaja a la API (ADR-0007).
