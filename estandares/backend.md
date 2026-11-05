@@ -281,6 +281,10 @@ en las escrituras, sin datos personales. Parámetros con el **mismo nombre** que
 - **El tiempo**: lo ocurrido es un instante en UTC (bean `Clock`, que los tests mueven); el día de calendario de la organización sale
   de un reloj propio del sector con su zona; una entidad, que no puede inyectar, usa `now(ZoneOffset.UTC)`. El sector copia el
   `TimeArchitectureTest` de la plataforma para que ningún `now()` sin zona vuelva a entrar.
+- **Lecturas de datos personales**: cada `GET` que devuelve datos de una persona lleva `@AuditedRead("Tipo")` en el método del
+  controlador (la lectura que salió bien deja un evento con tipo e id; la rechazada no). El sector fija con una prueba de
+  arquitectura la lista de controladores y exige la anotación en cada `GET`; lo que ya registra un evento propio más específico
+  (p. ej. el acceso entre organizaciones) queda fuera.
 - **Actos sensibles** (firmar un documento clínico, aprobar un pago): el sector llama a `RecentAuthentication.require()` al
   empezar el acto; sin una autenticación de hace segundos (`auth_time`) responde `401` con
   `WWW-Authenticate: Bearer error="insufficient_user_authentication"` y el cliente entra de nuevo por el BFF
