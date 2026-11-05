@@ -281,6 +281,10 @@ en las escrituras, sin datos personales. Parámetros con el **mismo nombre** que
 - **El tiempo**: lo ocurrido es un instante en UTC (bean `Clock`, que los tests mueven); el día de calendario de la organización sale
   de un reloj propio del sector con su zona; una entidad, que no puede inyectar, usa `now(ZoneOffset.UTC)`. El sector copia el
   `TimeArchitectureTest` de la plataforma para que ningún `now()` sin zona vuelva a entrar.
+- **Solicitudes de la persona sin cuenta o por otro canal** (ADR-0008): un administrador de nivel 1 las registra en nombre de la
+  persona (`POST /privacy/erasure-requests/on-behalf`) con el canal, quién las presenta, la referencia del documento y la atestación de
+  que comprobó la identidad; el sector **no** tiene un registro propio de solicitudes. Lo que impide irse todavía (cuidados en curso) se
+  declara con un `ErasureGuard` por persona, no por cuenta.
 - **Derechos de la persona** (acceso, supresión): el sector implementa `PersonalDataContributor` (qué guarda de la persona, por secciones),
   `PersonalDataEraser` (anonimiza o borra lo suyo, solo en la organización de la solicitud con `Scope.ORGANIZATION`; la identidad y la
   cuenta son de la plataforma) y, si hay cuidados en curso que impiden irse, un `AccountDeactivationGuard`. Lo que la ley obliga a conservar
