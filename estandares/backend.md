@@ -281,6 +281,11 @@ en las escrituras, sin datos personales. Parámetros con el **mismo nombre** que
 - **El tiempo**: lo ocurrido es un instante en UTC (bean `Clock`, que los tests mueven); el día de calendario de la organización sale
   de un reloj propio del sector con su zona; una entidad, que no puede inyectar, usa `now(ZoneOffset.UTC)`. El sector copia el
   `TimeArchitectureTest` de la plataforma para que ningún `now()` sin zona vuelva a entrar.
+- **Eventos de auditoría propios**: el enum del sector implementa `AuditEventType` (se guarda por su `code()` en la cadena de la
+  organización, igual que los de la plataforma). El mensaje es una clave `AuditMessage.of("clave", "param", valor…)`: no se escribe
+  una frase en el backend; la traduce el frontend con `audit_message.<clave>` en cada idioma, así que toda clave nueva se agrega al
+  diccionario del frontend del sector. La retención (`app.audit.retention.days`) del sector no se acorta sin una decisión
+  explícita: un registro clínico se conserva por ley.
 - **Lecturas de datos personales**: cada `GET` que devuelve datos de una persona lleva `@AuditedRead("Tipo")` en el método del
   controlador (la lectura que salió bien deja un evento con tipo e id; la rechazada no). El sector fija con una prueba de
   arquitectura la lista de controladores y exige la anotación en cada `GET`; lo que ya registra un evento propio más específico
