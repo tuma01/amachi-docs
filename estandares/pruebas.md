@@ -37,6 +37,16 @@
   publicable (`platform-test-support`) que cada aplicación importa con `<scope>test</scope>`; nadie la copia. Cada suite trae su
   realm de Keycloak (las cuentas de la plataforma más las suyas) y lo señala con `-Dplatform.test.keycloak-realm`. Lo propio
   de una aplicación (sus pasos, sus datos, sus reglas de arquitectura) se queda en su módulo de pruebas.
+- **Actos que exigen autenticación reciente** (firmar un documento clínico, ADR-0007): el inicio de sesión directo con contraseña de las
+  pruebas **no trae `auth_time`** y la API lo rechaza (`401` `SEC_017`, falla cerrada). La suite usa el paso compartido
+  `el usuario inició sesión hace un momento como …` (inicio de sesión real por las páginas de Keycloak con PKCE); el cliente de navegador
+  del realm de pruebas lleva la audiencia de la API. Una cuenta con segundo factor obligatorio (administradores) no puede usarlo: los
+  escenarios donde un administrador *no* debe firmar usan el inicio de sesión directo. Probar también el rechazo: firmar sin sesión reciente
+  da `401`.
+- **Una aplicación que adopta la plataforma porta su suite completa antes de darla por adoptada.** La compilación y los tests unitarios no
+  vieron nada de lo que destapó la suite de Vitalia: búsquedas que comparaban columnas cifradas, lecturas entre organizaciones sin el
+  ámbito de plataforma, hilos asíncronos y *schedulers* sin organización activa, y datos y permisos que la plataforma cambió. Los
+  escenarios que duplican a los de la plataforma (login, invitaciones, gobernanza) se borran en la aplicación; los propios del sector se portan.
 - **No compilar con Maven mientras el backend corre en el IDE** (rompe sus clases en caliente): validar en una copia
   aislada del repositorio.
 - Método para cambios que se repiten: template → **un** ejemplo validado → el resto, abriendo cada archivo.
