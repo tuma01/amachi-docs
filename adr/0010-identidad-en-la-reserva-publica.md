@@ -1,6 +1,6 @@
 # ADR-0010: La reserva pública no vincula a quien no probó ser la persona de la ficha
 
-- **Estado**: Aceptada
+- **Estado**: Aceptada (C el 2026-11-06; D el 2026-11-07)
 - **Fecha**: 2026-11-06
 - **Decide**: Juan Amachi (decisión abierta del code review de la adopción de Vitalia: «reserva con ficha sin fecha de nacimiento»)
 - **Controles ISO 27001**: A.5.15 (control de acceso), A.8.3 (restricción de acceso a la información), A.5.34 (privacidad) · Ley 25 /
@@ -35,7 +35,7 @@ que ya consta, o la revisión del documento en persona).
 
 ## Decisión
 
-**C ahora; D como mejora posterior.**
+**C el 2026-11-06 y D el 2026-11-07.**
 
 1. **Identidad verificada** (`identityVerified`) = nadie con ese documento es conocido (persona nueva), o la fecha de nacimiento
    que trae la reserva es **la de la ficha**. Una persona conocida cuya fecha **no coincide o no consta** queda **no verificada**.
@@ -46,14 +46,27 @@ que ya consta, o la revisión del documento en persona).
    parámetro, `409` (`booking.request.identity_review_required`). Queda **quién lo comprobó** (`identityVerifiedBy`) y, al confirmar,
    la reserva se vincula a la ficha como cualquier otra.
 5. **Lo que ve quien reserva no cambia con esto**: la vista pública no trae `identityVerified`, ni el vínculo (`patientId`).
-6. **Pendiente (D)**: una prueba de posesión automática. Mientras no esté, la **diferencia observable** que queda es que, en una agenda
-   de confirmación automática, una reserva no verificada queda pendiente y una verificada se confirma al instante: quien pruebe
-   documentos y fechas puede deducir que «existe una ficha con otra fecha». Lo limita el control de peticiones por IP de las rutas
-   públicas y la regla de una reserva activa por persona y día; **no lo elimina**. D lo elimina.
+6. **D, hecha (2026-11-07): prueba de posesión con un código de un solo uso.** Cuando la persona es conocida y no probó su fecha de
+   nacimiento, se envía un código de 6 dígitos **al correo de la ficha, nunca al del formulario**; la persona que reservó lo escribe en
+   `POST /public/booking/request/{código}/verify-identity` y la reserva queda verificada y vinculada, sin Admisión (en una agenda de
+   confirmación inmediata se confirma en ese momento; si el turno ya se ocupó, queda pendiente y verificada). Como los portales de
+   salud y banca: se guarda solo la huella SHA-256 del código, vale 15 minutos, sirve una vez, tiene 5 intentos, como mucho 3 códigos por
+   documento y hora (nadie puede inundar la bandeja de otra persona) y la ruta tiene límite por IP. **Todo fallo** (código malo, vencido,
+   sin intentos, sin código, reserva inexistente o ya resuelta) responde con **el mismo 409**: la verificación no revela nada. El correo
+   del código no lleva datos de quien reservó (ni nombre ni teléfono), solo el turno pedido, y dice que se ignore si no fue la persona. Sin
+   correo en la ficha, o con el tope de códigos alcanzado, sigue la revisión de Admisión de la opción C.
+7. **Riesgo residual aceptado** (ninguna combinación lo elimina del todo): quien reserva con un documento ajeno y **su propio correo**
+   recibe un código solo si el documento no tiene ficha (se le trata como persona nueva); con ficha, el código va a otro correo. Esa
+   diferencia entre «reserva nueva» y «reserva a la espera de un código» sigue siendo observable, y solo se evitaría revisando a mano
+   toda reserva pública, lo que mata la reserva inmediata. Lo limitan el control de peticiones por IP, una reserva activa por persona y
+   día, y que lo único que se averigua es «ese documento tiene o no ficha» sin ningún dato clínico. Decisión de Juan Amachi (2026-11-07):
+   código solo para conocidos y riesgo residual documentado.
 
 ## Consecuencias
 
 - Columnas nuevas en `BKG_REQUEST` (`IDENTITY_VERIFIED`, `IDENTITY_VERIFIED_BY`); la base de desarrollo se recrea (se editó el CREATE).
 - Contrato nuevo para el frontend (etapa 5): `identityVerified` en la bandeja de Admisión y el parámetro `identityChecked` al confirmar.
 - Un paciente que se equivoca de fecha ya no recibe un error: queda pendiente y Admisión lo resuelve (mejor experiencia y sin oráculo).
+- Contrato nuevo para el frontend: `POST /public/booking/request/{código}/verify-identity` con `{ "code": "…" }` (200 verificada; 409 con el mismo mensaje en cualquier fallo). El portal ofrece siempre «¿Recibió un código?» para no revelar quién tiene ficha.
+- Columnas nuevas en `BKG_REQUEST`: `IDENTITY_CODE_HASH`, `IDENTITY_CODE_EXPIRES_AT`, `IDENTITY_CODE_ATTEMPTS` (no auditadas en Envers).
 - La plataforma no cambia; el principio sirve para InverPulse (un cliente que «reserva» una llamada con un asesor).
