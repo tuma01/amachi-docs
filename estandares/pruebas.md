@@ -16,6 +16,12 @@
 4. **Plan de pruebas manuales recorrido antes de entregarlo**: cada paso con *rol · menú › submenú · botón · qué debe
    verse*.
 
+- **Verificar, nunca deducir**: todo dato que se afirma (estado de git y de las ramas, qué archivos cambiaron, qué compila, qué
+  pasa en una prueba, qué hace una dependencia, si un método se usa) se **comprueba con el comando o la lectura** en el momento de
+  afirmarlo. Si no se pudo comprobar, se dice «no verificado» y por qué; una deducción nunca se presenta como hecho. En concreto:
+  antes de dar comandos de `git` se mira `git status`, `git branch` y `git log`; antes de borrar o dar por «sin uso» un
+  método se busca quién lo usa; un refactor masivo se compila **en cada repositorio afectado** antes de entregarlo; y un
+  resultado de otra ejecución (otra rama, otro día) no vale para ésta.
 - **El paso del tiempo es parte de la validación**: días pasados, hoy antes y después de la hora, mañana, cierre del
   día, en la zona de la organización (Cucumber con un reloj movible y pasos "la hora es…", "pasan N minutos").
 - **Contrato**: el `openapi.json` nuevo difiere del anterior solo en lo esperado.

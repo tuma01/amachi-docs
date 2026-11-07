@@ -7,6 +7,10 @@
 - **Una base por despliegue**, MySQL 8.4 + Flyway. Nombre en desarrollo: **`platform_db`** (cada aplicación puede
   usar el suyo en producción: `inverpulse_db`). Credenciales **solo por variables de entorno** (`DB_USERNAME`,
   `DB_PASSWORD`); ninguna contraseña en los archivos del repositorio.
+- **MySQL con `lower_case_table_names=1`** (nombres de tabla sin distinguir mayúsculas; el valor por defecto en Windows). Las tablas se
+  crean en mayúsculas y Hibernate las busca en minúsculas; en Linux o Docker el servidor se arranca con `--lower-case-table-names=1`
+  al crear su directorio de datos (después no se puede cambiar). La plataforma lo comprueba antes de migrar y detiene el arranque con
+  el remedio en el mensaje. Los contenedores de prueba y el perfil `mysql` de los compose ya lo llevan.
 - **Prefijo de tabla = trigrama del módulo** (`<TRI>_<ENTIDAD>`, mayúsculas, singular): plataforma `GEO_`, `DMN_`,
   `AUT_`, `MGT_`; cada sector reserva los suyos y los registra en la tabla de §3.1 (ej. InverPulse: `MKT_` datos de
   mercado, `SIG_` señales, `AGT_` agentes, `PTF_` carteras/simulador). Dos módulos nunca comparten trigrama.

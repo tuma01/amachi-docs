@@ -220,6 +220,8 @@
 
 ## 7. Tiempo, estados y procesos
 
+- **Regla de tiempo (ADR-0011)**: instantes en UTC; el día de calendario lo pone la organización; ni una prueba compara con el
+  «hoy» del servidor.
 - **Reloj**: toda regla que dependa de "ahora" o de "hoy" usa un reloj inyectable de la organización
   (`TenantClock`: `now()`, `today()`, `zone()`), nunca `Instant.now()` / `LocalDate.now()`. El instante sale del bean
   `Clock` (`ClockConfig`, reemplazable en pruebas) y el **día en la zona de la organización** (`TenantConfig.timezone`
@@ -244,8 +246,9 @@
   una por origen y tipo (idempotente) y se resuelve sola cuando su origen ya no necesita a nadie.
 - **Correos**: se envían **después del commit**; se registra el resultado real (enviado / falló + motivo) y lo que
   falló queda visible para que una persona actúe. En desarrollo, siempre a MailDev, nunca al servidor real.
-- **Bitácora de auditoría**: todo cambio de gobierno se registra con `AuditService.registerEntityEvent(…)` después del
-  commit, en su propia transacción; mensajes traducibles (`AuditMessage.of(clave, params)`); la organización ve lo que
+- **Bitácora de auditoría**: todo cambio de gobierno se registra con `AuditService.registerEntityEvent(…)`: el evento se
+  guarda **con el cambio, en su transacción** (buzón de salida `AUT_AUDIT_OUTBOX`, ADR-0009), un relevo lo entrega a la cadena
+  con reintentos y un acto que no se puede registrar no se hace (503); mensajes traducibles (`AuditMessage.of(clave, params)`); la organización ve lo que
   hizo su gente **y lo que la plataforma cambió en ella**. **Solo agregar y encadenada** (SEG11): cada evento entra por
   `AuditChain.append` con la huella HMAC del anterior de su organización; nunca se actualiza ni se borra (solo la
   retención, que deja ancla y constancia); `GET /audit-events/integrity` lo verifica. Una lectura de datos sensibles
