@@ -62,6 +62,14 @@ que ya consta, o la revisión del documento en persona).
    día, y que lo único que se averigua es «ese documento tiene o no ficha» sin ningún dato clínico. Decisión de Juan Amachi (2026-11-07):
    código solo para conocidos y riesgo residual documentado.
 
+8. **Endurecimiento tras el code review (2026-11-07).** (a) El tope de 3 códigos por documento y hora cuenta **cuándo se envió**
+   (`IDENTITY_CODE_ISSUED_AT`, que nada borra): antes contaba el vencimiento, que un fallo o una verificación limpiaban, y quien atacaba
+   podía reiniciar el tope y llenar la bandeja de la víctima. (b) El intento se cuenta con la reserva **bloqueada** (`PESSIMISTIC_WRITE`):
+   intentos simultáneos ya no se pisan (el límite de 5 se cumple y ninguno da un 500 por bloqueo optimista). (c) Crear una reserva
+   bloquea la **agenda**: dos solicitudes a la vez ya no toman el mismo turno. (d) La solicitud guarda cifrados (AES-256-GCM, como
+   `Person`) el documento, el correo y el motivo de consulta; el documento tiene índice ciego (la búsqueda de Admisión pasa a documento
+   exacto). El residuo del punto 7 sigue aceptado: el estado de la respuesta en agendas de confirmación inmediata lo deja ver.
+
 ## Consecuencias
 
 - Columnas nuevas en `BKG_REQUEST` (`IDENTITY_VERIFIED`, `IDENTITY_VERIFIED_BY`); la base de desarrollo se recrea (se editó el CREATE).

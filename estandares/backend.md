@@ -29,6 +29,16 @@
   —las encuentra en las entidades— y en su historial `_AUD`; la clave vieja se retira cuando ya no quedan valores con ella
   (lo registra el log). Un campo cifrado necesita `@Column(name)` explícito. El índice ciego no rota. Nunca un dato personal
   en los logs.
+- **También lo cifrado de una tabla de sector**: una solicitud, un formulario público o una cola que guarde el documento, el correo o un
+  texto libre de salud los cifra igual que `Person` (con su índice ciego para buscar por el documento); que sea «temporal» o «de la
+  reserva» no es una excepción. La búsqueda de texto parcial sobre esas columnas se pierde y se cambia por coincidencia exacta.
+- **Seguridad de un flujo público**: (1) un tope «N por hora» cuenta **cuándo se envió**, con una columna que nada borra (si cuenta algo
+  que un fallo o una verificación limpian, quien ataca lo reinicia); (2) un acto que consume intentos (un código de un solo uso) lee la
+  fila **bloqueada** (`PESSIMISTIC_WRITE`): dos intentos a la vez se cuentan uno tras otro; (3) lo que se reserva (un turno, una cama) se
+  decide con la agenda o el recurso **bloqueados** en la transacción, no con «consultar y luego guardar»; (4) sin la clave de un servicio
+  externo (el modelo de IA) **no se inventa un resultado**: se falla; el modo demo solo lo piden `dev` y la suite de pruebas.
+- Un `application-<perfil>.yml` **no declara `spring.profiles.active`** (Spring Boot lo rechaza dentro de un archivo de perfil: el perfil
+  no arrancaba): el perfil se elige desde fuera, con `SPRING_PROFILES_ACTIVE`.
 - Converters y entity listeners de JPA son beans de Spring (`SpringBeanContainer`): reciben sus dependencias por
   constructor, sin holders estáticos. Solo `AuditRevisionListener` (Envers) sigue leyendo un holder.
 - `@Builder.Default` de Lombok **no aplica** con MapStruct: todo campo `NOT NULL` con valor por defecto se asigna en el
