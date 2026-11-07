@@ -20,6 +20,10 @@
   `src/main/resources/db/migration`; Flyway las encuentra todas en el classpath.
 - Claves foráneas `FK_ID_<ENTIDAD>`; restricciones con nombre (`UK_…`, `FK_…`, `IDX_…`); columnas de auditoría y de
   tenant las aportan las clases base (`AuditableTenantEntity`).
+- **Tipos y índices sin avisos de MySQL 8.4**: un booleano se declara `BOOLEAN` (es el mismo `TINYINT(1)`, pero `TINYINT(1)` y cualquier ancho
+  como `INT(11)` están obsoletos y cada uno da un aviso al migrar); un campo único se declara **una sola vez** (`UNIQUE` en la columna **o**
+  `CONSTRAINT UK_… UNIQUE (…)`, nunca los dos: crea dos índices idénticos). Al arrancar una aplicación de sector el log de Flyway no debe traer
+  avisos de MySQL.
 - **Fase de desarrollo: sin `ALTER TABLE`** — se edita el `CREATE TABLE` original y se recrea la base.
 - Toda columna nueva en una entidad `@Audited` va también en su tabla `_AUD` (si no, Hibernate no arranca).
 - Nunca una columna cuyo nombre termine en una palabra reservada que el driver pueda leer como cláusula (`..._INTO`:
