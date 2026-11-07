@@ -33,6 +33,7 @@ apartarse de una regla, lo dice explícitamente en su documento y por qué.
 | `estandares/pruebas.md` | §10 Pruebas y calidad |
 | `plantillas/checklist-feature.md` | §11 Checklist de un feature nuevo |
 | `seguridad/cumplimiento.md` | §14 Objetivo de cumplimiento (ISO 27001, OWASP ASVS L2, Ley 25) · §14.1 Decisiones |
+| `seguridad/iso27001.md` | Mapa «control del Anexo A → qué lo cubre → evidencia», regla para cada cambio, brechas conocidas |
 | `amachi-platform/docs/PLATAFORMA.md` | §12 Caso → archivo modelo · §13 Modernización · §14.2 Plan de etapas |
 | `CHANGELOG.md` | §15 Registro de cambios |
 | `adr/` | Decisiones de arquitectura, una por archivo |

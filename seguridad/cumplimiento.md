@@ -11,6 +11,9 @@
 ISO 27701**. (La certificación ISO es de la organización y su SGSI, no del software: la plataforma aporta los controles
 y la evidencia para la auditoría.)
 
+El mapa control por control, con su evidencia y las brechas conocidas, está en `iso27001.md`; **todo cambio nombra el control
+que toca** (regla en su §1).
+
 ### 14.1 Decisiones
 
 | Tema | Decisión | Control |

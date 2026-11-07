@@ -49,9 +49,13 @@
 ### 5.3 Mapper
 - MapStruct `@Mapper(config = BaseMapperConfig.class)` que extiende `EntityDtoMapper<E, D>`, con las anotaciones de
   campos ignorados (`@IgnorePureAuditableFields`, `@IgnoreTenantAuditableFields`, `@IgnoreSoftDelete`…).
-- **FK a otra entidad: ignorarla en el mapper y resolverla en el servicio** (`entityManager.getReference` o `find`).
-  Nunca `@Mapping(target = "x.id", source = "xId")`: crea un objeto "cáscara" que falla al guardar (409/500) o, sobre
-  una relación ya cargada, cambia su id ("identifier was altered"). Fue el bug más repetido de Vitalia.
+- **FK a otra entidad: resolverla con `EntityReferences`** (`core-common`): el mapper declara `uses = EntityReferences.class`
+  y `@Mapping(target = "patient", source = "patientId")`; el componente carga la entidad **dentro de la organización de la
+  petición** (`404` si el id no existe o es de otra). Así un id de otra organización nunca queda como clave foránea. La
+  alternativa, cuando hace falta una regla propia, es ignorarla en el mapper y resolverla en el servicio (`find`).
+  **Nunca** `@Mapping(target = "x.id", source = "xId")`: crea un objeto "cáscara" que falla al guardar (409/500) o, sobre
+  una relación ya cargada, **reescribe su id** ("identifier was altered", o peor, otra fila) — fue el bug más repetido de
+  Vitalia (18 mapeadores) — ni `new X()` con solo el id. Control ISO 27001 A.8.3 (ver `seguridad/iso27001.md`).
 - Si la respuesta lee datos de la relación (nombre, código) **después** de la transacción, la relación debe estar
   cargada: `em.find` (no `getReference`) o `@EntityGraph` en el repositorio. Si no: `LazyInitializationException` → 500.
 - Prohibido el round-trip `Entity → DTO → Entity`.
