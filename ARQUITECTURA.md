@@ -184,9 +184,12 @@
   para crear su contraseña. Reset de un administrador = email de Keycloak. Los inicios de sesión se auditan en los
   eventos de Keycloak. Lo vigila `IdentityArchitectureTest` (ninguna clase usa `PasswordEncoder` ni emite JWT).
 - **Segundo factor, bloqueo y política (SEG3, realm como código `keycloak/amachi-realm-*.json`)**: los roles de
-  `app.security.oidc.second-factor-roles` (por defecto `SUPER_ADMIN`, `ADMIN`; un sector agrega los suyos) reciben
-  el rol de realm `mfa-required` al darse de alta y el flujo `amachi-browser` les exige OTP en cada inicio de
-  sesión (lo configuran en el primero). 5 fallos bloquean la cuenta 1 minuto más cada vez, hasta 15. Contraseña:
+  `app.security.oidc.second-factor-roles` (**vacío por defecto**: el segundo factor es opcional para todos, ADR-0013; un
+  despliegue o un sector que lo exija lista sus roles) reciben el rol de realm `mfa-required` al darse de alta y el flujo
+  `amachi-browser` les exige OTP en cada inicio de sesión (lo configuran en el primero; si ya tienen OTP, **un solo
+  código**). Quien no lo tiene obligatorio lo activa cuando quiere: el BFF expone `secondFactorEnabled` (lo dice el
+  servicio de cuenta de Keycloak), el frontend muestra una opción del menú del usuario y un aviso solo a los administradores, y
+  `/oauth2/authorization/keycloak?action=enable-second-factor` lleva a la página de configuración (`kc_action`). 5 fallos bloquean la cuenta 1 minuto más cada vez, hasta 15. Contraseña:
   12 a 128 caracteres, ni el usuario ni el email, ninguna de las 5 anteriores, sin reglas de composición
   (NIST 800-63B). Ningún cliente de producción tiene *direct grant* (saltaría el flujo del navegador).
 - **BFF (SEG4, `platform-bff`, paquete `com.amachi.bff`, sin dependencias de `core-*`)**: la única puerta del
