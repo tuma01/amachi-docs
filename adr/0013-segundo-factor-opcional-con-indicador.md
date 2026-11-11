@@ -44,7 +44,10 @@ autenticación. Probado con el navegador real, el efecto en la práctica fue otr
      código una sola vez**, sea el 2F opcional o impuesto;
    - se declara el **rol por defecto** (`default-roles-amachi`, con `offline_access`, `uma_authorization` y los roles `view-profile` y
      `manage-account` del cliente `account`): la consola de cuenta funciona para todos y es donde cada persona gestiona su contraseña y su
-     segundo factor.
+     segundo factor;
+   - el cliente `amachi-bff` pide también el alcance `roles`: sin él el token no trae la audiencia `account` y el servicio de cuenta lo
+     rechaza (401), así que el BFF nunca sabría si el 2F está activo (`secondFactorEnabled` quedaba en `null`). Verificado con el navegador:
+     activar → `true`, el aviso desaparece y el menú dice «activa»; cerrar sesión y volver a entrar pide **un solo** código.
 
 ## Riesgo aceptado y compensaciones
 
