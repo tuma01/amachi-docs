@@ -65,3 +65,4 @@ decisión en la primera auditoría de ISO 27001.
 - Un realm ya creado no relee el archivo: en una instancia existente hay que asignar a mano los roles de cuenta (o recrearla).
 - **Pendiente** (no bloquea): «recordar este dispositivo» (no existe en Keycloak 26.4; exigiría una extensión propia), tema visual de
   la página de inicio de sesión con la marca del producto, y alinear los realms propios de cada sector (`vitalia-realm-*.json`).
+- **Actualización 2026-11-17**: los usuarios que Keycloak importa de un JSON de realm no reciben `default-roles-<realm>` si el JSON no lo lista; sin él, el token no trae los roles de `account`, el servicio de cuenta responde 401 y `secondFactorEnabled` queda `null`. Los JSON de desarrollo (plataforma y Vitalia) ya lo listan. Verificado en el navegador: con el rol, el menú muestra «activado» y el aviso del panel desaparece.

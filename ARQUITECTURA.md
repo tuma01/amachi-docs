@@ -42,7 +42,7 @@
 
 | Principio | En la práctica |
 |---|---|
-| **Nivel profesional siempre** | Nunca una versión "de prototipo". Se toma como referencia la aplicación líder del sector (Epic/Cerner en salud; Doctoralia/Zocdoc para reservas públicas; Bloomberg/TradingView/Interactive Brokers en finanzas) y se dice cuál se sigue y por qué. Se muestra el ejemplo concreto (URL, pantalla) **antes** de construir. |
+| **Nivel profesional siempre** | Nunca una versión "de prototipo". Se toma como referencia la aplicación líder del sector (Epic/Cerner en salud; Doctoralia/Zocdoc para reservas públicas; Bloomberg/TradingView/Interactive Brokers en finanzas) y se dice cuál se sigue y por qué. Se muestra el ejemplo concreto (URL, pantalla) **antes** de construir. Antes de proponer un flujo o una pantalla se lee la documentación y la demo congelada (tag `v1.0.0-demo`, con `git show`, sin cambiar de rama): la demo es la base y se adapta, no se rehace; se enseñan capturas reales, no maquetas. |
 | **Solución estructurada** | Ante la duda entre texto libre / booleano / enum fijo y una relación con catálogo, entidad propia o componente reutilizable: **la estructurada**. |
 | **Escala real** | Nada que crezca con el uso se carga completo en memoria ni en el navegador (§9). |
 | **Seguridad que falla cerrada** | Un endpoint sin regla explícita **no compila o no pasa el test de arquitectura** (§6). |

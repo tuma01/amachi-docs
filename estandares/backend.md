@@ -287,7 +287,11 @@ en las escrituras, sin datos personales. Parámetros con el **mismo nombre** que
   de seguridad y un sector no puede abrir las de la plataforma. Lo que una ruta pública hace es del sector: expone solo lo que la
   organización publica, valida todo lo que recibe y **limita por IP** las rutas que se pueden martillar; el contador es por
   patrón (un código de confirmación no se prueba "uno a uno" con cuota nueva cada vez). La organización de una ruta pública sale
-  del subdominio, o de la cabecera cuando el visitante la eligió en un directorio (`visitorChosenTenant`).
+  del subdominio, o de la cabecera cuando el visitante la eligió en un directorio (`visitorChosenTenant`). La propia plataforma usa
+  el mismo mecanismo (`PrivacyPublicRoutes`: `GET /public/privacy/officer`, el contacto del responsable de privacidad que la ley
+  hace público); el servicio de una ruta pública lee la organización de `TenantContext` (la de la petición), **nunca** de
+  `AuthContextHolder` (la de una sesión; aquí no hay). Una ruta pública lleva `@PreAuthorize("permitAll()")`, su contribuyente y una
+  prueba de que se abre solo esa ruta y solo para lectura.
 - **Trabajo de fondo y datos iniciales de un sector**: entran a una organización con `TenantScope` (`inTenant` abre su sesión y
   transacción; `inTenantContext` para tareas que conservan sus propias transacciones; `asPlatform` para lo que lee varias
   organizaciones a propósito), nunca con `TenantContext.set…/clear`. Sin ámbito, el filtro de `@TenantId` falla cerrado o
