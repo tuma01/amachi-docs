@@ -191,7 +191,9 @@
   servicio de cuenta de Keycloak), el frontend muestra una opción del menú del usuario y un aviso solo a los administradores, y
   `/oauth2/authorization/keycloak?action=enable-second-factor` lleva a la página de configuración (`kc_action`). 5 fallos bloquean la cuenta 1 minuto más cada vez, hasta 15. Contraseña:
   12 a 128 caracteres, ni el usuario ni el email, ninguna de las 5 anteriores, sin reglas de composición
-  (NIST 800-63B). Ningún cliente de producción tiene *direct grant* (saltaría el flujo del navegador).
+  (NIST 800-63B). *Direct grant*: solo el cliente `amachi-bff` lo tiene (ADR-0014), con un flujo propio (`amachi-direct-grant`) que exige el
+  código del segundo factor por rol y por cuenta, el correo confirmado (`verifyEmail`) y que el BFF comprueba la organización pedida; ningún otro
+  cliente lo tiene (saltaría el flujo del navegador).
 - **BFF (SEG4, `platform-bff`, paquete `com.amachi.bff`, sin dependencias de `core-*`)**: la única puerta del
   navegador. Inicia la sesión con Keycloak (código + PKCE, cliente confidencial `amachi-bff`) pidiendo
   `organization:<alias>` (`/oauth2/authorization/keycloak?organization=<alias>`); los tokens quedan en la sesión del
